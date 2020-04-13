@@ -1,12 +1,14 @@
 #include <iostream>
+#include <math.h>
 using namespace std;
 int cnt=0;
 
 bool prime(int n){
-    if(n == 1)
+    int root = sqrt(n);
+    if(n<2)
         return false;
     else{
-        for(int i=2; i<n; i++){
+        for(int i=2; i<=root; i++){
             if(n%i == 0)
                 return false;
         }
