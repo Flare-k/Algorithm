@@ -9,8 +9,8 @@ const int MAX = 1000+1;
 int arr[MAX][MAX];
 bool visit[MAX][MAX];
 int cnt,n;
-int dx[4]={-1,1,0,0};
-int dy[4]={0,0,-1,1};
+int dx[4]={1,-1,0,0};       //아래 위 우 좌
+int dy[4]={0,0,1,-1};
 vector<int> result;
 
 
