@@ -12,8 +12,10 @@ void go(int index, int start, int n, int m){
         return;
     }
     for(int i=start; i<=n; i++){
-        if(c[i]) continue;
-        c[i] = true; a[index] = i;
+        if(c[i])
+            continue;
+        c[i] = true;
+        a[index] = i;
         go(index+1, i+1, n, m); // 4 2
         c[i] = false;
     }

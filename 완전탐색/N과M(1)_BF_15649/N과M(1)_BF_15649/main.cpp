@@ -13,8 +13,10 @@ void go(int index, int n, int m){
     }
     
     for(int i=1; i<=n; i++){
-        if(c[i]) continue;
-        c[i] = true; a[index] = i;
+        if(c[i])
+            continue;
+        c[i] = true;
+        a[index] = i;
         go(index+1, n, m);
         c[i] = false;
     }

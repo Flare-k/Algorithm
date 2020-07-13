@@ -40,12 +40,15 @@ int main(){
         bool ok = true; //0의 존재여부
         int sum = 0;
         for(int i=0; i<n-1; i++){
-            if(w[d[i]][d[i+1]] == 0) ok = false;
-            else sum += w[d[i]][d[i+1]];
+            if(w[d[i]][d[i+1]] == 0)
+                ok = false;
+            else
+                sum += w[d[i]][d[i+1]];
         }
         if(ok && w[d[n-1]][d[0]] != 0){ //마지막도시에서 원래도시로 돌아오는
             sum += w[d[n-1]][d[0]];
-            if(ans > sum) ans = sum;
+            if(ans > sum)
+                ans = sum;
         }
     }while(next_permutation(d.begin()+1, d.end())); //벡터 d에는 이미 1~N이 들어가 있는데, next_permu로 모든 순서를 고려..
     
