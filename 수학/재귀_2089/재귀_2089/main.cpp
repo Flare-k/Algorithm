@@ -3,6 +3,9 @@
 #include <algorithm>
 #define endl "\n"
 using namespace std;
+/*
+ -2진수_수학/재귀_2089
+ */
 void go(int n){
     if(n == 0)
         return;
