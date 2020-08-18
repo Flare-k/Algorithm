@@ -8,61 +8,75 @@ vector<int> arr[MAX];
 int red = 1;
 int blue = 2;
 int n, v, e;
- 
-void dfs(int start){
-    if(!visited[start])
+
+void dfs(int start)
+{
+    if (!visited[start])
         visited[start] = red;
-    for(int i=0; i<arr[start].size(); i++){
+    for (int i = 0; i < arr[start].size(); i++)
+    {
         int next = arr[start][i];
-        if(!visited[next]){
-            if(visited[start] == red){
+        if (!visited[next])
+        {
+            if (visited[start] == red)
+            {
                 visited[next] = blue;
             }
-            else if(visited[start] == blue){
+            else if (visited[start] == blue)
+            {
                 visited[next] = red;
             }
             dfs(next);
         }
     }
 }
-bool isBipartiteGraph() {
-    for (int i = 1; i <= v; i++) {
-        for (int j = 0; j < arr[i].size(); j++) {
+bool isBipartiteGraph()
+{
+    for (int i = 1; i <= v; i++)
+    {
+        for (int j = 0; j < arr[i].size(); j++)
+        {
             int next = arr[i][j];
-            if (visited[i] == visited[next]) {
+            if (visited[i] == visited[next])
+            {
                 return 0;
             }
         }
     }
     return 1;
 }
-int main(){
+int main()
+{
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
-    cin>>n;
-    while(n--){
-        for(int i=1; i<=v; i++)
+    cin >> n;
+    while (n--)
+    {
+        for (int i = 1; i <= v; i++)
             arr[i].clear();
         memset(visited, false, sizeof(visited));
-        cin>>v>>e;
-        for(int i=0; i<e; i++){
-            int a,b;
-            cin>>a>>b;
+        cin >> v >> e;
+        for (int i = 0; i < e; i++)
+        {
+            int a, b;
+            cin >> a >> b;
             arr[a].push_back(b);
             arr[b].push_back(a);
         }
-        for(int i=1; i<=v; i++){
-            if(!visited[i]){
+        for (int i = 1; i <= v; i++)
+        {
+            if (!visited[i])
+            {
                 dfs(i);
             }
         }
-        
-        if(isBipartiteGraph())
-            cout<<"YES"<<'\n';
+
+        if (isBipartiteGraph())
+            cout << "YES" << '\n';
         else
-            cout<<"NO"<<'\n';
+            cout << "NO" << '\n';
     }
-    
+
     return 0;
 }
 
