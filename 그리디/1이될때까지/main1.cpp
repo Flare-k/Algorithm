@@ -1,4 +1,4 @@
-// N의 크기가 매우 클 경우..
+// N의 크기가 매우 클 경우..!
 #include <iostream>
 using namespace std;
 
