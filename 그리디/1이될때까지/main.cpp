@@ -1,4 +1,4 @@
-// 단순하게 푸는 경우
+// 단순하게 푸는 경우!
 #include <iostream>
 using namespace std;
 
