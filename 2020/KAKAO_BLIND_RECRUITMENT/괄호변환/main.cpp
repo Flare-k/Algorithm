@@ -47,6 +47,7 @@ string solution(string w) {
          break;
       }
    }
+
    if (checkString(u)) {
       answer += u;
       answer += solution(v);
@@ -77,3 +78,12 @@ int main() {
    cout << solution(req) << '\n';
    return 0;
 }
+/*
+Test Case
+)()()()(  ->  (((())))
+(()())()  ->  (()())()
+)(        ->  ()
+()))((()  ->  ()(())()
+)()(()    ->  ((()))
+())()(    ->  ()(())
+*/
