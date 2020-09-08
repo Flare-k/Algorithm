@@ -41,9 +41,14 @@ string solution(string w) {
       } else if (w[i] == ')') {
          cntV++;
       }
+      tmp += w[i];
       if (cntU == cntV) {
-         u = strParsing(w, 0, i);
-         v = strParsing(w, i + 1, w.length() - 1);
+         // u = strParsing(w, 0, i);
+         u = tmp;
+         // v = strParsing(w, i + 1, w.length() - 1);
+         for (int j = i + 1; j < w.length(); j++) {
+            v += w[j];
+         }
          break;
       }
    }
@@ -56,7 +61,14 @@ string solution(string w) {
       string setting = "(";
       setting += solution(v);
       setting += ")";
-      u = strParsing(u, 1, u.length() - 2);
+
+      string tmp2;
+      for (int i = 1; i < u.length() - 1; i++) {
+         tmp2 += u[i];
+      }
+      u = tmp2;
+
+      // u = strParsing(u, 1, u.length() - 2);
       for (int i = 0; i < u.length(); i++) {
          if (u[i] == '(') {
             setting += ")";
