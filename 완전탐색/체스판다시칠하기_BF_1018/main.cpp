@@ -21,7 +21,6 @@ void init() {
 }
 
 int check(int r, int c) {
-   char subChess[8][8];
    int ans = 999999999;
    int whiteCnt = 0;
    int blackCnt = 0;
