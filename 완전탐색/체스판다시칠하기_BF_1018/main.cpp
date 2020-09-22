@@ -9,10 +9,12 @@ using namespace std;
 const int MAX = 50 + 1;
 int n, m;
 char chess[MAX][MAX];
-string whiteFirst[8] = {{"WBWBWBWB"}, {"BWBWBWBW"}, {"WBWBWBWB"}, {"BWBWBWBW"},
-                        {"WBWBWBWB"}, {"BWBWBWBW"}, {"WBWBWBWB"}, {"BWBWBWBW"}};
-string blackFirst[8] = {{"BWBWBWBW"}, {"WBWBWBWB"}, {"BWBWBWBW"}, {"WBWBWBWB"},
-                        {"BWBWBWBW"}, {"WBWBWBWB"}, {"BWBWBWBW"}, {"WBWBWBWB"}};
+const char* whiteFirst[8] = {{"WBWBWBWB"}, {"BWBWBWBW"}, {"WBWBWBWB"},
+                             {"BWBWBWBW"}, {"WBWBWBWB"}, {"BWBWBWBW"},
+                             {"WBWBWBWB"}, {"BWBWBWBW"}};
+const char* blackFirst[8] = {{"BWBWBWBW"}, {"WBWBWBWB"}, {"BWBWBWBW"},
+                             {"WBWBWBWB"}, {"BWBWBWBW"}, {"WBWBWBWB"},
+                             {"BWBWBWBW"}, {"WBWBWBWB"}};
 
 void init() {
    ios_base::sync_with_stdio(false);
@@ -48,9 +50,6 @@ int main() {
          chess[i][j] = board[j];
       }
    }
-   int row = 0;
-   int col = 0;
-   vector<int> ans;
    int result = 999999999;
    for (int i = 0; i <= n - 8; i++) {
       for (int j = 0; j <= m - 8; j++) {
