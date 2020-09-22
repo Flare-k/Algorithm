@@ -8,41 +8,42 @@ const int MAX = 100001;
 bool visited[MAX];
 int dist[MAX];
 
-void BFS(int n){
-    visited[n] = true;
-    dist[n] = 0;
-    queue<int> q; q.push(n);
-    while(!q.empty()){
-        int now = q.front();
-        q.pop();
-        if(now-1>=0){
-            if(!visited[now-1]){
-                q.push(now-1);
-                visited[now-1] = true;
-                dist[now-1] = dist[now] + 1;
-            }
-        }
-        if(now+1<MAX){
-            if(!visited[now+1]){
-                q.push(now+1);
-                visited[now+1] = true;
-                dist[now+1] = dist[now] + 1;
-            }
-        }
-        if(now*2<MAX){
-            if(!visited[now*2]){
-                q.push(now*2);
-                visited[now*2] = true;
-                dist[now*2] = dist[now] + 1;
-            }
-        }
-    }
+void BFS(int n) {
+   visited[n] = true;
+   dist[n] = 0;
+   queue<int> q;
+   q.push(n);
+   while (!q.empty()) {
+      int now = q.front();
+      q.pop();
+      if (now - 1 >= 0) {
+         if (!visited[now - 1]) {
+            q.push(now - 1);
+            visited[now - 1] = true;
+            dist[now - 1] = dist[now] + 1;
+         }
+      }
+      if (now + 1 < MAX) {
+         if (!visited[now + 1]) {
+            q.push(now + 1);
+            visited[now + 1] = true;
+            dist[now + 1] = dist[now] + 1;
+         }
+      }
+      if (now * 2 < MAX) {
+         if (!visited[now * 2]) {
+            q.push(now * 2);
+            visited[now * 2] = true;
+            dist[now * 2] = dist[now] + 1;
+         }
+      }
+   }
 }
 
 int main() {
-    int a,b;
-    cin>>a>>b;
-    BFS(a);
-    cout<<dist[b]<<'\n';
-    return 0;
+   int a, b;
+   cin >> a >> b;
+   BFS(a);
+   cout << dist[b] << '\n';
+   return 0;
 }
