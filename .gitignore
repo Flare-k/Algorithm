@@ -82,3 +82,12 @@ Hello.c
 연습장
 시험
 Programmers_Study
+./main
+./main.dSYM
+/main
+/main.dSYM
+/main
+/main.dSYM
+*/main
+*/main.dSYM
+
