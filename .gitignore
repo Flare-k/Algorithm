@@ -76,6 +76,7 @@ DerivedData/
 
 
 *.dSYM
+main
 .vscode/
 Hello
 Hello.c
