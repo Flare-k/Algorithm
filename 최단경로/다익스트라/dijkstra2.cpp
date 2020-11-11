@@ -18,7 +18,7 @@ void dijkstra(int start){
     pq.push({0, start}); // {가중치, 노드}
     d[start] = 0;
 
-    while(!pq.empty()){
+    while (!pq.empty()){
         // 우선순위 큐이므로 거리가 먼 값을 고려하기 위해 음수 처리하여 거리가 가까운 값을 최우선으로 오도록 만든다.
         int dist = -pq.top().first;
         int now = pq.top().second;
@@ -28,6 +28,7 @@ void dijkstra(int start){
 
         for (int i = 0; i < graph[now].size(); i++){
             int cost = dist + graph[now][i].second;
+            
             if (cost < d[graph[now][i].first]){
                 d[graph[now][i].first] = cost;
                 pq.push({-cost, graph[now][i].first});
