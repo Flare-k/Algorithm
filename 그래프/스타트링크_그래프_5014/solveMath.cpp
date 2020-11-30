@@ -19,7 +19,7 @@ int main() {
         }
 
         // 1) 모든 경우가 안 되는 케이스
-        // 현재 층 + Up이 총 층수보다 크거나 현재 층 + Down이 1보다 작으면 멈춘다
+        // 현재 층 + Up이 총 층수보다 크고 현재 층 - Down이 1보다 작으면 멈춘다
         if (current + up > total && current - down < 1) break;
 
         if (current + up <= total && current < destination)  // 2) Up인 케이스
