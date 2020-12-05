@@ -11,13 +11,16 @@ using namespace std;
  */
 int main(){
     int total, kim, imm;
-    cin>>total>>kim>>imm;
+    cin >> total >> kim >> imm;
     int cnt=0;
+
     while(kim != imm){
-        kim = kim/2 + kim%2;
-        imm = imm/2 + imm%2;
-        cnt+=1;
+        kim = kim / 2 + kim % 2;
+        imm = imm / 2 + imm % 2;
+        cnt += 1;
     }
-    cout<<cnt<<'\n';
+    
+    cout << cnt << '\n';
+    
     return 0;
 }
