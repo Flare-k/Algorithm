@@ -9,6 +9,7 @@ int main() {
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
     cout.tie(NULL);
+    
     int r, c;   // 가로, 세로 값
     cin >> r >> c;
 
