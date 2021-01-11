@@ -8,7 +8,7 @@ using namespace std;
 */
 int arr[2188][2188];
 
-void devidePaper(int x, int y, int size, int res[3]) {
+void dividePaper(int x, int y, int size, int res[3]) {
     int firstElem = arr[x][y];
     bool flag = true;
 
@@ -28,7 +28,7 @@ void devidePaper(int x, int y, int size, int res[3]) {
     else {
         for (int nx = x; nx < x + size; nx += size/3) {
             for (int ny = y; ny < y + size; ny += size/3) {
-                devidePaper(nx, ny, size/3, res);
+                dividePaper(nx, ny, size/3, res);
             }
         }
     }
@@ -53,7 +53,7 @@ int main() {
         }
     }
 
-    devidePaper(0, 0, size, res);
+    dividePaper(0, 0, size, res);
 
     for (int i = 0; i < 3; i++) {
         cout << res[i] << endl;
