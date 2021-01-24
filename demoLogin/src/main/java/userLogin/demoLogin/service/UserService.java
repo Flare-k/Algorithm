@@ -10,7 +10,7 @@ import userLogin.demoLogin.domain.UserInfo;
 import userLogin.demoLogin.dto.UserInfoDto;
 import userLogin.demoLogin.repository.UserRepository;
 
-@RequiredArgsConstructor
+@RequiredArgsConstructor    // 초기화 되지 않은 final 필드나, @NonNull 이 붙은 필드에 대해 생성자를 생성해준다.
 @Service
 public class UserService implements UserDetailsService {
 
@@ -38,6 +38,7 @@ public class UserService implements UserDetailsService {
      * @return UserDetails
      * @throws UsernameNotFoundException 유저가 없을 때 예외 발생
      */
+    // 기본적인 반환 타입은 UserDetails, UserDetails를 상속받은 UserInfo로 반환 타입 지정 (자동으로 다운 캐스팅됨)
     @Override
     public UserInfo loadUserByUsername(String email) throws UsernameNotFoundException {
         return userRepository.findByEmail(email)
