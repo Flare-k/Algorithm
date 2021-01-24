@@ -14,14 +14,14 @@ using namespace std;
  3. 1, 2에서 경우에 따라서 최소 값을 최대 팀 수로 채택.
 */
 int main() {
-   ios_base::sync_with_stdio(false);
-   cin.tie(0);
-   cout.tie(0);
+    ios_base::sync_with_stdio(false);
+    cin.tie(0);
+    cout.tie(0);
 
-   int n, m, k;
-   cin >> n >> m >> k;
+    int n, m, k;
+    cin >> n >> m >> k;
 
-   cout << min(min(n / 2, m), (n + m - k) / 3) << endl;
-   
-   return 0;
+    cout << min(min(n / 2, m), (n + m - k) / 3) << endl;
+    
+    return 0;
 }
