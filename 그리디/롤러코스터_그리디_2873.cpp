@@ -45,12 +45,13 @@ int main() {
         } 
         else {
             int minScore = 987654321;
-            pair<int, int> minPair;
+            pair<int, int> minPair; // 검은 칸이면서 지나지 말아야 할 지점
 
             for (int i = 0; i < r; i++) {
                 for (int j = 0; j < c; j++) {
                     cin >> arr[i][j];
 
+                    // 검은 칸이고 최소 점수 | (i + j) % 2인 이유? 흰색 -> 검은색으로 가는 지점이 (i + j) % 2 == 1일때 이다.
                     if ((i + j) % 2 && minScore > arr[i][j]) {
                         minScore = arr[i][j];
                         minPair = {i, j};
@@ -58,6 +59,7 @@ int main() {
                 }
             }
 
+            // 지나지 말아야 할 좌표의 최좌측으로 내려오고
             int newR = minPair.first % 2 ? minPair.first - 1 : minPair.first;
             for (int i = 0; i < newR; i++) {
                 for (int j = 0; j < c - 1; j++) {
@@ -69,6 +71,7 @@ int main() {
                 res += "D";
             }
 
+            // 지나지 말아야 할 좌표의 대각선 아래까지 이동하고(↙)
             int newC = minPair.second;
             for (int i = 0; i < newC; i++) {
                 if (i % 2 == 0)
@@ -77,6 +80,7 @@ int main() {
                     res += "UR";
             }
 
+            // 지나지 말아야 할 좌표의 최우측으로 이동
             for (int i = newC; i < c -1; i++) {
                 if (i % 2 == 0)
                     res += "RD";
@@ -84,6 +88,7 @@ int main() {
                     res += "RU";
             }
 
+            // 목적지까지
             if (minPair.first % 2 == 0)
                 newR = r - (minPair.first + 2);
             else
