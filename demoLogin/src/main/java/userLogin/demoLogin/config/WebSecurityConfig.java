@@ -15,7 +15,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import userLogin.demoLogin.service.UserService;
 
-@RequiredArgsConstructor
 @EnableWebSecurity // 1. Spring Security 활성화
 @Configuration
 
