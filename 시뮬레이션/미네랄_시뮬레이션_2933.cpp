@@ -20,7 +20,7 @@ void clusterDown() {
     bool visitCluter[MAX][MAX];
     memset(visitCluter, false, sizeof(visitCluter));
 
-    // cluster인 곳 . 표시하기
+    // cluster인 곳 . 표시하고 미방문 표시로 갱신
     for (int i = 0; i < cluster.size(); i++) {
         int x = cluster[i].first;
         int y = cluster[i].second;
@@ -33,7 +33,7 @@ void clusterDown() {
         }
     }
 
-    // 클러스터인 좌표중 한 행씩 아래로 밀어서 x 표시하고 방문 체크
+    // 클러스터인 좌표 중 한 행씩 아래로 밀어서 x 표시하고 방문 체크
     for (int i = 0; i < cluster.size(); i++) {
         int x = cluster[i].first;
         int y = cluster[i].second;
@@ -50,7 +50,7 @@ void clusterDown() {
 
         if (x == r - 1)
             return;
-        if (arr[x + 1][y] == 'x' && !visitCluter[x + 1][y])
+        if (arr[x + 1][y] == 'x' && !visitCluter[x + 1][y]) // 다른 클러스터의 미네랄일 경우
             return;
     }
 
@@ -110,7 +110,6 @@ int main() {
         int h;  // 막대기 높이
         cin >> h;
 
-
         // 창영 (왼쪽 -> 오른쪽)
         if (i % 2 == 0) {
             for (int i = 0; i < c; i++) {
@@ -122,12 +121,12 @@ int main() {
         }
         // 상근 (오른쪽 -> 왼쪽)
         else {
-           for (int i = c - 1; i >= 0; i--) {
-              if (arr[r - h][i] == 'x') {
-                 arr[r - h][i] = '.';
-                 break;
-              }
-           }
+            for (int i = c - 1; i >= 0; i--) {
+                if (arr[r - h][i] == 'x') {
+                    arr[r - h][i] = '.';
+                    break;
+                }
+            }
         }
 
         clust();
