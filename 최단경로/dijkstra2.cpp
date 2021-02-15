@@ -41,6 +41,8 @@ int main(){
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
     cout.tie(NULL);
+
+    // 노드 개수, 간선 개수, 시작 노드
     cin >> n >> m >> start;
 
     for (int i = 0; i < m; i++){
