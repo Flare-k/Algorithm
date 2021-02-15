@@ -41,10 +41,9 @@ int main() {
         sort(scores.begin(), scores.end());
 
         int res = 1;
-        bool check = false;
         int tmp = scores[0].second;
-        for (int i = 1; i < scores.size(); i++) {
 
+        for (int i = 1; i < scores.size(); i++) {
             if (scores[i].second < tmp) {
                 res++;
                 tmp = scores[i].second;
