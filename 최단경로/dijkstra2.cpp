@@ -45,7 +45,7 @@ int main(){
 
     for (int i = 0; i < m; i++){
         int a, b, c;
-        cin >> a >> b >> c;
+        cin >> a >> b >> c;     // a 노드에서 b 노드의 거리 = c
         graph[a].push_back({b, c});
     }
 
