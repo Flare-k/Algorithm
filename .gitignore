@@ -91,4 +91,5 @@ Programmers_Study
 /main.dSYM
 */main
 */main.dSYM
-
+*/*.exe
+*.exe
