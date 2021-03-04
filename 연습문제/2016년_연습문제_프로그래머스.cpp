@@ -13,24 +13,27 @@ using namespace std;
  */
 string solution(int a, int b) {
     string answer = "";
-    int temp=0;
+    int temp = 0;
+
     string day[] = {"FRI", "SAT", "SUN", "MON", "TUE", "WED", "THU"};
     int month[] = {31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
     
-    for(int i=0; i<a-1; i++)
+    for (int i = 0; i < a - 1; i++)
         temp += month[i];
-    temp += b-1;
+    temp += b - 1;
     
-    answer = day[temp%7];
+    answer = day[temp % 7];
     
     return answer;
 }
 
 int main() {
-    ios_base :: sync_with_stdio(false); cin.tie(NULL);
+    ios_base::sync_with_stdio(false); 
+    cin.tie(NULL);
+
     int a, b;   //a:월 b:일
-    cin>>a>>b;
-    cout<<solution(a, b)<<'\n';
+    cin >> a >> b;
+    cout << solution(a, b) << '\n';
     
     return 0;
 }
