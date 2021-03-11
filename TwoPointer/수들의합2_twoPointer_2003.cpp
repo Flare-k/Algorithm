@@ -17,18 +17,16 @@ int main() {
         cin >> arr[i];
     }
 
-    LL start = 0, end = 0, sum = 0, cnt = 0;
+    LL start = 0, sum = 0, cnt = 0;
 
-    while (start <= end && end <= N + 1) {
-        if (sum >= M) {
+    for (int i = 0; i < N; i++) {
+        sum += arr[i];
+
+        while (sum >= M) {
             if (sum == M) {
                 cnt++;
             }
             sum -= arr[start++];
-        }
-        else {
-            if (end == N + 1) break;
-            sum += arr[end++];
         }
     }
 
