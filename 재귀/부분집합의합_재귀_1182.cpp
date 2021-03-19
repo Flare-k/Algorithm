@@ -13,34 +13,41 @@
 #include <iostream>
 #include <vector>
 using namespace std;
-vector<int> arr;
-int n,s;
-int answer=0;
 
-void go(int index, int sum){
-    if(index == n){
-        if(sum == s){
+vector<int> arr;
+int n, s;
+int answer = 0;
+
+void go(int index, int sum) {
+    if (index == n) {
+        if (sum == s) {
             answer += 1;
         }
         
         return;
     }
     
-    go(index+1, sum+arr[index]);
-    go(index+1, sum);
+    go(index + 1, sum + arr[index]);
+    go(index + 1, sum);
+
 }
 
 int main() {
-    cin>>n>>s;
+    cin >> n >> s;
+
     int num;
-    for(int i=0; i<n; i++){
-        cin>>num;
+
+    for (int i = 0; i < n; i++) {
+        cin >> num;
         arr.push_back(num);
     }
-    go(0,0);
+
+    go(0, 0);
+
     if(s == 0) answer -= 1; //공집합을 제외
     //공집합은 아무것도 없는 경우라서 합이 0이 나온다. 그러면 항상 go(index+1, sum)이 함수만 선택하면 합이 0이 나올 것.
     //그래서 문제에서 구하라고 하는 합이 0일 때만 공집합의 합을 빼준다.
-    cout<<answer<<endl;
+    cout << answer << endl;
+    
     return 0;
 }

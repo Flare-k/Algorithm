@@ -17,35 +17,37 @@ using namespace std;
  */
 int n; // 테스트 케이스 갯수
 vector<int> lotto;
-void go(vector<int> &a, int index, int cnt){
-    if(cnt == 6){
-        for(int i=0; i<lotto.size(); i++){
-            cout<<lotto[i]<<' ';
+void go(vector<int> &a, int index, int cnt) {
+    if (cnt == 6) {
+        for (int i = 0; i < lotto.size(); i++) {
+            cout << lotto[i] << ' ';
         }
-        cout<<'\n';
+
+        cout << '\n';
         return;
     }
-    if(index >= a.size()) return;
+
+    if (index >= a.size()) return;
+    
     lotto.push_back(a[index]);
-    go(a, index+1, cnt+1);
-    lotto.pop_back();
-    // 여기까지 index번째를 선택하는경우
+    go(a, index + 1, cnt + 1);
+    lotto.pop_back();       // 여기까지 index번째를 선택하는경우
     
-    go(a, index+1, cnt);
-    //선택하지 않는 경우
-    
+    go(a, index + 1, cnt);  //선택하지 않는 경우
 }
 
 int main() {
-    while(cin>>n && n){
+    while (cin >> n && n) {
         vector<int> inputvec;
         vector<int> checkvec;
+
         int num;
         
-        for(int i=0; i<n; i++){
-            cin>>num;
+        for (int i = 0; i < n; i++) {
+            cin >> num;
             inputvec.push_back(num);
         }
+        
         go(inputvec, 0, 0);
     }
     
