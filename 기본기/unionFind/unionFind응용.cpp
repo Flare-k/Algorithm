@@ -18,7 +18,7 @@ int vect[200];
 char getBoss(char ch) {
     if (vect[ch] == 0) return ch;
 
-    int res = getBoss(vect[ch]);
+    char res = getBoss(vect[ch]);
     vect[ch] = res;
     return res;
 }

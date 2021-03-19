@@ -19,7 +19,7 @@ int vec[200];
 
 char getBoss(char ch) {
     if (vec[ch] == 0) return ch;
-    int res = getBoss(vec[ch]);
+    char res = getBoss(vec[ch]);
     vec[ch] = res;
     return res;
 }
