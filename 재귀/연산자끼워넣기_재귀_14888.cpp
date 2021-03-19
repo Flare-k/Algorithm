@@ -16,51 +16,61 @@ using namespace std;
 
 int a[20];
 
-pair<int, int> go(vector<int>& a, int index, int cur, int plus, int minus, int mul ,int div){
-    if(index == a.size())
+pair<int, int> go(vector<int>& a, int index, int cur, int plus, int minus, int mul ,int div) {
+    if(index == a.size()){
         return make_pair(cur, cur);
+    }
+
     vector<pair<int, int>> res;
     
-    if(plus > 0){
+    if (plus > 0) {
         res.push_back(go(a, index+1, cur+a[index], plus-1, minus, mul, div));
     }
-    if(minus > 0){
+    if (minus > 0) {
         res.push_back(go(a, index+1, cur-a[index], plus, minus-1, mul, div));
     }
-    if(mul > 0){
+    if (mul > 0) {
         res.push_back(go(a, index+1, cur*a[index], plus, minus, mul-1, div));
     }
-    if(div > 0){
+    if (div > 0) {
         res.push_back(go(a, index+1, cur/a[index], plus, minus, mul, div-1));
     }
+
     auto ans = res[0];
-    for(auto p : res){
-        if(ans.first < p.first){
+    for (auto p : res) {
+        if (ans.first < p.first) {
             ans.first = p.first;
         }
-        if(ans.second > p.second){
+        if (ans.second > p.second) {
             ans.second = p.second;
         }
     }
+
     return ans;
 }
 
 
 int main() {
     int n;
-    cin>>n;
+    cin >> n;
+
     vector<int> a;
     vector<int> oper;
+
     int num;
-    for(int i=0; i<n; i++){
-        cin>>num;
+
+    for (int i = 0; i < n; i++) {
+        cin >> num;
         a.push_back(num);
     }
+
     int plus, minus, mul, div;
-    cin>>plus>>minus>>mul>>div;
-    auto p = go(a, 1,a[0],plus,minus,mul,div);
-    cout<<p.first<<'\n';
-    cout<<p.second<<'\n';
+    cin >> plus >> minus >> mul >> div;
+
+    auto p = go(a, 1, a[0], plus, minus, mul, div);
+
+    cout << p.first << '\n';
+    cout << p.second << '\n';
     
     return 0;
 }
