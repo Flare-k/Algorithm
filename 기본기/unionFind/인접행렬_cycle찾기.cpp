@@ -1,7 +1,11 @@
 #include <iostream>
 using namespace std;
 
-int vect[100];
+/*
+  푸는 데 은근 헤맸다...
+*/
+
+char vect[100];
 
 char getBoss(char ch) {
     if (vect[ch] == 0) return ch;
@@ -30,20 +34,17 @@ int main() {
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
             cin >> matrix;
-            if (j > i && matrix) {
+            if (j > i && matrix) {  // 대각 행렬만 구하면 되므로 j > i 조건을 작성
+                if (getBoss('A' + i) == getBoss('A' + j)) {
+                    cout << "cycle 발견";
+                    return 0;
+                }
+                
                 setGroup('A' + i, 'A' + j);
             }
         }
     }
 
-    for (int i = 0; i < n; i++) {
-        for (int j = i; j < n; j++) {
-            if (getBoss('A' + i) == getBoss('A' + j)) {
-                cout << "cycle 발견";
-                return 0;
-            }
-        }
-    }
     cout << "미발견";
 
     return 0;
