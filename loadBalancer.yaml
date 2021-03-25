@@ -1,0 +1,13 @@
+# http-go-np.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: tomcat
+spec:
+  type: LoadBalancer
+  selector:
+    app: tomcat
+  ports:
+    - port: 80          # 서비스의 포트
+      targetPort: 8080  # 포드(컨테이너)의 포트
+      nodePort: 30001   # 노드 포트
