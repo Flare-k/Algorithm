@@ -1,0 +1,32 @@
+# http-go-deploy-svc.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: http-go
+spec:
+  selector:
+    app: http-go
+  ports:
+    - protocol: TCP
+      port: 80 # 서비스의 포트
+      targetPort: 8080 # 컨테이너의 포트
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: http-go
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: http-go
+  template:
+    metadata:
+      labels:
+        app: http-go
+    spec:
+      containers:
+      - name: http-go
+        image: gasbugs/http-go
+        ports:
+        - containerPort: 8080
