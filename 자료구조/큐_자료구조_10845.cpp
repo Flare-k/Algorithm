@@ -27,6 +27,7 @@ int main(){
             else
                 cout << -1 << '\n';
         }
+
         if (command == "pop") {
             if (!q.empty()) {
                 cout << q.front() << '\n';
@@ -35,18 +36,21 @@ int main(){
             else
                 cout << -1 << '\n';
         }
+
         if (command == "empty") {
             if (q.empty())
                 cout << 1 << '\n';
             else
                 cout << 0 << '\n';
         }
+
         if (command == "back") {
             if (!q.empty())
                 cout << q.back() << '\n';
             else
-                cout<<-1<<'\n';
+                cout << -1 << '\n';
         }
+        
         if (command == "size") {
             cout << q.size() << '\n';
         }

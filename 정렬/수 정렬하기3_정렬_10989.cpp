@@ -13,15 +13,15 @@ int main(){
     int a;
     scanf("%d", &a);
     
-    for(int i=0; i<a; i++){
+    for (int i = 0; i < a; i++) {
         int num;
         scanf("%d", &num);
         res[num] += 1;
     }
     
     
-    for(int i=1; i<=10000; i++){
-        for(int j=0; j<res[i]; j++){
+    for (int i = 1; i <= 10000; i++) {
+        for (int j = 0; j < res[i]; j++) {
             printf("%d\n", i);
         }
     }

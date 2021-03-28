@@ -25,11 +25,11 @@ vector<int> solution(vector<int> progresses, vector<int> speeds) {
 }
 
 int main() {
-    vector<int> progresses{93,30,55};
-    vector<int> speeds{1,30,5};
+    vector<int> progresses{93, 30, 55};
+    vector<int> speeds{1, 30, 5};
     
     for (int i = 0; i < solution(progresses, speeds).size(); i++) {
-        cout<<solution(progresses, speeds)[i]<<' ';
+        cout << solution(progresses, speeds)[i] << ' ';
     }
 
     cout << '\n';

@@ -17,24 +17,33 @@ bool comp(pair<string, int> a, pair<string, int> b) {
       if (a.first < b.first) return true;
    return false;
 }
+
 int main() {
-   ios_base::sync_with_stdio(false);
-   cin.tie(0);
-   cout.tie(0);
-   int n;
-   cin >> n;
-   vector<pair<string, int> > arr;
-   while (n--) {
-      string s;
-      cin >> s;
-      arr.push_back(make_pair(s, s.length()));
-   }
-   sort(arr.begin(), arr.end(), comp);
-   string temp;
-   for (int i = 0; i < arr.size(); i++) {
-      if (arr[i].first == temp) continue;
-      cout << arr[i].first << endl;
-      temp = arr[i].first;
-   }
-   return 0;
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    cout.tie(NULL);
+
+    int n;
+    cin >> n;
+
+    vector<pair<string, int>> arr;
+    
+    while (n--) {
+        string s;
+        cin >> s;
+        arr.push_back({s, s.length()});
+    }
+
+    sort(arr.begin(), arr.end(), comp);
+
+    string temp;
+
+    for (int i = 0; i < arr.size(); i++) {
+        if (arr[i].first == temp) continue;
+        
+        cout << arr[i].first << endl;
+        temp = arr[i].first;
+    }
+    
+    return 0;
 }
