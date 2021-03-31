@@ -13,11 +13,8 @@ void push(int doll) {
         bucket.push_back(doll);
     }
     else if (bucket.back() == doll) {
-        while (1) {
-            bye += 2;   // 바구니에 있던 것 + 현재 인형
-            bucket.pop_back();
-            if (bucket.back() != doll) break;
-        }
+        bye += 2;   // 바구니에 있던 것 + 현재 인형
+        bucket.pop_back();
     }
 }
 
