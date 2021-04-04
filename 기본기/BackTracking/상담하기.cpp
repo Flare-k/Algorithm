@@ -7,22 +7,20 @@ struct Schedule {
 };
 
 Schedule scd[10];
-int used[10];
+
 int maxSum = -21e8;
 int n;
 
-void run(int level, int start, int sum) {
-    if (level >= n || start == 4) {
+void run(int start, int sum) {
+    if (maxSum >= sum) return;
+
+    if (start >= n) {
         if (maxSum < sum) maxSum = sum;
         return;
     }
 
     for (int i = start; i < n; i ++) {
-        if (used[i] == 1) continue;
-
-        used[i] = 1;
-        run(level + scd[i].day, level + scd[i].day, sum + scd[i].money);
-        used[i] = 0;
+        run(i + scd[i].day, sum + scd[i].money);
     }
     
 
@@ -40,10 +38,10 @@ int main() {
         cin >> scd[i].day >> scd[i].money;
     }
 
-    run(0, 0, 0);
+    run(0, 0);
 
-    cout << maxSum;
-
+    cout << maxSum << '\n';;
+  
     return 0;
 }
 /*
@@ -54,6 +52,7 @@ int main() {
 1 10
 1 20
 2 15
+> 45
 
 5
 2 20
@@ -61,4 +60,5 @@ int main() {
 1 5
 2 10
 1 30
+> 60
 */
