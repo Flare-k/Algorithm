@@ -1,53 +1,40 @@
 #include <iostream>
 #include <vector>
+#include <cstring>
 #include <algorithm>
 using namespace std;
 
-struct Node {
-    char from;
-    char to;
-    int value;
-};
-/*
-B T 10
-G T 3
-G H 6
-G K 2
-H B 1
-K B 8
-T H 2
-T B 4
-*/
-int vect[100];
+vector<pair<char, int>> travel[100];
 
-vector<Node> list = {
-    {'B', 'T', 10},
-    {'G', 'T', 3},
-    {'G', 'H', 6},
-    {'G', 'K', 2},
-    {'H', 'B', 1},
-    {'K', 'B', 8},
-    {'T', 'H', 2},
-    {'T', 'B', 4}
-};
-
-vector<pair<char, int>> travel[8];
+bool visit[100];
+char path[6];  // 중간
+char res[6];   // 최종
 int minSum = 21e8;
-bool visit[10][10];
+char aFrom, aTo;
 
-void init() {
-    travel['B'].push_back({'T', 10});
-    travel['G'].push_back({'T', 3});
-    travel['G'].push_back({'H', 6});
-    travel['G'].push_back({'K', 2});
-    travel['H'].push_back({'B', 1});
-    travel['K'].push_back({'B', 8});
-    travel['T'].push_back({'H', 2});
-    travel['T'].push_back({'B', 4});
-}
+void DFS(char from, int sum, int level) {
+    if (level > 5) return;
 
-void DFS(char from, char to) {
-    
+    if (from == aTo) {
+        if (minSum > sum) {
+            minSum = sum;
+            memcpy(res, path, 6);
+        }
+        return;
+    }
+
+    for (int i = 0; i < travel[from].size(); i++) {
+        char to = travel[from][i].first;
+
+        if (visit[to]) continue;
+
+        visit[from] = true;
+        path[level] = to;
+        DFS(to, sum + travel[from][i].second, level + 1);
+        path[level] = 0;
+        visit[from] = false;
+        
+    }
 
 }
 
@@ -56,12 +43,25 @@ int main() {
     cin.tie(NULL);
     cout.tie(NULL);
 
-    init();
+    travel['B'].push_back({'T', 10});
+    travel['G'].push_back({'T', 3});
+    travel['G'].push_back({'H', 6});
+    travel['G'].push_back({'K', 2});
+    travel['H'].push_back({'B', 1});
+    travel['K'].push_back({'B', 8});
+    travel['T'].push_back({'H', 2});
+    travel['T'].push_back({'B', 4});
 
-    char aFrom, aTo;
     cin >> aFrom >> aTo;
 
+    DFS(aFrom, 0, 0);
 
+    if (minSum != 21e8) {
+        cout << minSum << ":" << aFrom << res;
+    }
+    else {
+        cout << "impossible";
+    }
 
     return 0;
 }
