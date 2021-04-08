@@ -1,10 +1,11 @@
 #include <iostream>
 using namespace std;
 
-int cube[5][5];
+int cube[5][5]; // 최대 큐브
 int maxScore = -21e8;
 int n;
 
+// 각 열의 합을 모두 곱하기
 int score() {
     int total = 1;
 
@@ -19,6 +20,7 @@ int score() {
     return total;
 }
 
+// 오른쪽으로 한 칸 씩 이동
 void spin(int idx) {
     int temp = cube[idx][n - 1];
     for (int i = n - 1; i >= 1; i--) {
@@ -28,6 +30,7 @@ void spin(int idx) {
     cube[idx][0] = temp;
 }
 
+// 만약 n번 반복한다면 최대 점수는?
 void run(int level) {
     if (level == n) {
         if (maxScore < score()) maxScore = score();
