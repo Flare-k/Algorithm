@@ -13,29 +13,26 @@ void run(int level, int px, int py, int s, int y) {
     if (y >= 4) return;
 
     if (level == 7) {
-        if (s >= y) cnt++;
+        if (s > y) cnt++;
         return;
     }
-
-    // visit[px][py] = true;
 
     for (int i = 0; i < 4; i++) {
         int nx = px + dx[i];
         int ny = py + dy[i];
 
         if (nx < 0 || ny < 0 || nx >= 5 || ny >= 5) continue;
+        if (visit[nx][ny]) continue;
 
-        if (!visit[nx][ny]) {
-            if (syClass[nx][ny] == 'S') {
-                visit[nx][ny] = true;
-                run(level + 1, nx, ny, s + 1, y);
-                visit[nx][ny] = false;
-            }
-            else if (syClass[nx][ny] == 'Y') {
-                visit[nx][ny] = true;
-                run(level + 1, nx, ny, s, y + 1);
-                visit[nx][ny] = false;
-            }
+        if (syClass[nx][ny] == 'S') {
+            visit[nx][ny] = true;
+            run(level + 1, nx, ny, s + 1, y);
+            visit[nx][ny] = false;
+        }
+        else if (syClass[nx][ny] == 'Y') {
+            visit[nx][ny] = true;
+            run(level + 1, nx, ny, s, y + 1);
+            visit[nx][ny] = false;
         }
     }
 }
@@ -56,10 +53,10 @@ int main() {
     visit[0][0] = true;
 
     if (syClass[0][0] == 'S') {
-        run(1, 0, 0, 1, 0);
+        run(1, 1, 1, 1, 0);
     }
     else if (syClass[0][0] == 'Y') {
-        run(1, 0, 0, 0, 1);
+        run(1, 1, 1, 0, 1);
     }
 
     cout << cnt;
