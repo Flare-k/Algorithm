@@ -13,9 +13,8 @@ Menu menu[5];
 
 int price, n;
 int maxCharge = -21e8;
-int used[5];
 
-void run(int level, int totalPrice, int totalPoint) {
+void run(int level, int start, int totalPrice, int totalPoint) {
     if (level == n) {
         int cups = price / totalPrice;    // n 종류의 총 잔 수
         int curPoint = cups * totalPoint;      // 총 잔 수 * 총 포인트
@@ -26,12 +25,8 @@ void run(int level, int totalPrice, int totalPoint) {
         return;
     }
 
-    for (int i = 0; i < 5; i++) {
-        if (used[i] == 1) continue;
-
-        used[i] = 1;
-        run(level + 1, totalPrice + menu[i].price, totalPoint + menu[i].pt);
-        used[i] = 0;
+    for (int i = start; i < 5; i++) {
+        run(level + 1, i + 1, totalPrice + menu[i].price, totalPoint + menu[i].pt);
     }
 }
 
@@ -49,7 +44,7 @@ int main() {
 
     cin >> price >> n;
 
-    run(0, 0, 0);
+    run(0, 0, 0, 0);
 
     cout << maxCharge;
 
