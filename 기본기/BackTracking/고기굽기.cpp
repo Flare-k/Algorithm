@@ -4,7 +4,7 @@ using namespace std;
 
 string meat;
 int minCnt = 21e8;
-int cnt;
+int cnt, n;
 
 bool isOX() {
     char pivot = meat[0];
@@ -15,20 +15,15 @@ bool isOX() {
     return true;
 }
 
-void changeOX(int i) {
-    if (meat[i] == 'X') meat[i] = 'O';
-    else meat[i] = 'X';
+// 좌 가운데 우 | 값이 X 또는 O일 경우 그 반대로 변경
+void changeOX(int idx) {
+    for (int i = -1; i <= 1; i++) {
+        int conn = idx + i;
+        if (conn <= 0 || conn >= n) continue;
 
-    if (i - 1 >= 0) {
-        if (meat[i - 1] == 'X') meat[i - 1] = 'O';
-        else meat[i - 1] = 'X';
+        if (meat[conn] == 'O') meat[conn] = 'X';
+        else meat[conn] = 'O';
     }
-
-    if (i + 1 < meat.length()) {
-        if (meat[i + 1] == 'X') meat[i + 1] = 'O';
-        else meat[i + 1] = 'X';
-    }
-
 }
 
 void run(int level) {
@@ -57,6 +52,7 @@ int main() {
     cout.tie(NULL);
 
     cin >> meat;
+    n = meat.length();
 
     run(0);
 
