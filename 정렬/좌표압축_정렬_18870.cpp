@@ -1,6 +1,5 @@
 #include <iostream>
 #include <vector>
-#include <cstring>
 #include <map>
 #include <algorithm>
 using namespace std;
@@ -28,10 +27,8 @@ int main() {
         arr.push_back({a, 0});
     }
 
-    vector<Node> tmp;
-    tmp.clear();
-    tmp.assign(arr.begin(), arr.end());
-
+    vector<Node> tmp(arr);
+    
     sort(tmp.begin(), tmp.end(), cmp);
     map<int, int> val;
 
