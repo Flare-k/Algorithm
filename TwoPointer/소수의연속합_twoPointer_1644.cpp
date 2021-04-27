@@ -39,6 +39,7 @@ int main() {
     int len = res.size();
     int startIdx = 0;
     int cnt = 0;
+    /*
     for (int i = startIdx; i < len; i++) {
         sum += res[i];
         if (sum == target) {
@@ -50,6 +51,22 @@ int main() {
             sum = 0;
             i = startIdx++;
         }
+    }
+    */
+   int endIdx = 0;
+
+    while (1) {
+        if (sum >= target) {
+            sum -= res[startIdx++];
+        }
+        else if (endIdx == len) {
+            break;
+            }
+        else {
+            sum += res[endIdx++];
+        }
+
+        if (sum == target) cnt++;
     }
 
     cout << cnt;
