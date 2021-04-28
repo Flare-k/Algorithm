@@ -43,11 +43,9 @@ int main() {
             end--;
             start++;
         }
-
     }
 
     cout << cnt;
-
 
     return 0;
 }
