@@ -27,7 +27,7 @@ int main() {
         }
     }
 
-    while (end != N) {
+    while (end != N + 1) {
         if (sum < S) {
             sum += arr[end++];
         }
@@ -38,7 +38,12 @@ int main() {
         }
     }
 
-    cout << minLen;
+    if (minLen == 21e8) {
+        cout << 0;
+    }
+    else {
+        cout << minLen;
+    }
 
     return 0;
 }
