@@ -3,7 +3,6 @@
 #include <algorithm>
 using namespace std;
 
-
 int main() {
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
@@ -12,54 +11,48 @@ int main() {
     int n, amount;
     cin >> n >> amount;
 
-    vector<int> books(n);
+    vector<int> posBooks;   // 책이 양수의 위치에 있는 경우
+    vector<int> negBooks;   // 책이 음수의 위치에 있는 경우
 
-    int negative = 0;
-    int positive = 0;
-
+    int book;
     for (int i = 0; i < n ; i++) {
-        cin >> books[i];
+        cin >> book;
         
-        if (books[i] < 0) negative++;
-        else positive++;
+        if (book < 0) negBooks.push_back(-book);
+        else posBooks.push_back(book);
     }
 
-    books.push_back(0);
-    sort(books.begin(), books.end());
+    // 음수/양수 모두 거리가 먼 순서부터 내림차순 정렬
+    if (!negBooks.empty()) sort(negBooks.begin(), negBooks.end(), greater<int>());
+    if (!posBooks.empty()) sort(posBooks.begin(), posBooks.end(), greater<int>());
 
-    int startIdx;
-    for (int i = 0; i < books.size(); i++) {
-        if (books[i] == 0) {
-            startIdx = i;
-            break;
-        }
+    int res = 0;
+
+    // 들 수 있는 책의 개수만큼 x2
+    for (int i = 0; i < posBooks.size(); i += amount) {
+        res += (posBooks[i] * 2);
     }
 
-    // 작은 쪽 먼저 확인
+    for (int i = 0; i < negBooks.size(); i += amount) {
+        res += (negBooks[i] * 2);
+    }
 
-    if (negative > positive) {
-        int left = startIdx + 1; 
-        int right = books.size() - 1;
-        int dist = 0;
-
-        while (right <= startIdx) {
-            dist += (books[right] * 2);
-            right -= amount;
-        }
-
-        while (left >= startIdx) {
-
-        }
+    // 만약 음수의 경우 책이 없었다면 양수에서 책을 다 나눠주고 그자리에서 끝나야 하므로..
+    if (negBooks.empty()) {
+        res -= posBooks[0];
+    }
+    else if (posBooks.empty()) {
+        res -= negBooks[0];
+    }
+    // 만약 양수가 제일 멀다면 가장 마지막에 가야한다. 따라서 x2했을 때에서 하나를 빼준다.
+    else if (negBooks[0] < posBooks[0]) {
+        res -= posBooks[0];
     }
     else {
-        int left = 0; 
-        int right = startIdx + 1;
-        int dist = 0;
-        
-
+        res -= negBooks[0];
     }
 
-
+    cout << res;
 
     return 0;
 }
