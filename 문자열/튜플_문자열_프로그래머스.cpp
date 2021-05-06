@@ -29,7 +29,7 @@ vector<string> split(string str) {
         right++;
 	}
 
-    sort(tmp.begin(), tmp.end(), cmp);
+    sort(tmp.begin(), tmp.end(), cmp);  // 길이에 따라 오름차순 정렬
 
     return tmp;
 }
