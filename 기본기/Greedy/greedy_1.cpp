@@ -3,7 +3,6 @@ using namespace std;
 
 int coins[4] = {500, 100, 50, 10};
 
-
 int main() {
     int target = 1350;
 
@@ -18,6 +17,6 @@ int main() {
     }
 
     cout << num;
-    
+
     return 0;
 }
