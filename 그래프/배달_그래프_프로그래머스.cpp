@@ -7,7 +7,7 @@ struct Node {
     int next, time;
 };
 
-vector<Node> vect[51] = {};
+vector<Node> vect[51];
 int visit[52][52] = { 0 };
 
 void DFS(int idx, int sum, int N, int K) {
