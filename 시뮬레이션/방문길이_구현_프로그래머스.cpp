@@ -8,7 +8,7 @@ using namespace std;
 int solution(string dirs) {
     int x = 0, y = 0, oldX = 0, oldY = 0, cnt = 0;
 
-    using edge = tuple < int, int, int, int>;
+    using edge = tuple <int, int, int, int>;
     set<edge> avatar;
 
     for (char way : dirs){
