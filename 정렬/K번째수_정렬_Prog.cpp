@@ -23,11 +23,9 @@ vector<int> solution(vector<int> array, vector<vector<int>> commands) {
 int main() {
     vector<int> a = {9, 5, 8, 6, 3, 7, 4, 10, 11, 100, 201};
 
-    vector<vector<int>> command = {
-                                    {2,9,8},
+    vector<vector<int>> command = {{2,9,8},
                                     {4,10,2},
-                                    {1,7,3}
-                                };
+                                    {1,7,3}};
     
     for (int i = 0; i < solution(a, command).size(); i++) {
         cout << solution(a, command)[i] << ' ';

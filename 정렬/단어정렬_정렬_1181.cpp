@@ -11,11 +11,11 @@
 using namespace std;
 
 bool comp(pair<string, int> a, pair<string, int> b) {
-   if (a.second < b.second)
-      return true;
-   else if (a.second == b.second)
-      if (a.first < b.first) return true;
-   return false;
+    if (a.second < b.second)
+        return true;
+    else if (a.second == b.second)
+        if (a.first < b.first) return true;
+    return false;
 }
 
 int main() {

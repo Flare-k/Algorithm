@@ -27,10 +27,13 @@ int solution(string skill, vector<string> skill_trees) {
     return answer;
 }*/
 int solution(string skill, vector<string> skill_trees) {
+    
     int answer = 0;
+
     for (int i = 0; i < skill_trees.size(); i++) {
         vector<char> compare;
         string s = skill_trees[i];
+
         for (int k = 0; k < s.size(); k++) {    //주어진 문장의 길이
             for (int j = 0; j < skill.size(); j++) {    //입력한 문자의 길이
                 if (s[k] == skill[j]) { //k고정 j가 여러번 반복
@@ -39,12 +42,13 @@ int solution(string skill, vector<string> skill_trees) {
                 }
             }
         }
-        bool check = true;; //string vector의 문장 하나마다 체크해줌
+
+        bool check = true; //string vector의 문장 하나마다 체크해줌
+
         for (int c = 0; c < compare.size(); c++) {
-            if (skill[c] != compare[c]) {
-                check = false;
-            }
+            if (skill[c] != compare[c]) check = false;
         }
+        
         if (check)answer++;
     }
 
@@ -53,8 +57,11 @@ int solution(string skill, vector<string> skill_trees) {
 
 int main(){
     string skill;
+    
     vector<string> skill_trees{"BACDE", "CBADF", "AECB", "BDA"};
+    
     skill = "CBD";
+    
     cout<<solution(skill, skill_trees)<<'\n';
     
     return 0;
