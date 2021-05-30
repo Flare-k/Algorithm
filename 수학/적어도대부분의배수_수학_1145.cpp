@@ -3,7 +3,6 @@
 #include <vector>
 using namespace std;
 
-
 int main() {
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
@@ -15,18 +14,24 @@ int main() {
         cin >> arr[i];
     }
 
-    for (int i = 1; ; i++) {
+    sort(arr.begin(), arr.end());
+
+    int idx = arr.front();
+
+    while (1) {
         int cnt = 0;
-        
-        for (int j = 0; j < 5; j++) {
-            if (i % arr[j] == 0) {
+        for (int i = 0; i < 5; i++) {
+            if (idx % arr[i] == 0) {
                 cnt++;
+
                 if (cnt >= 3) {
-                    cout << i;
+                    cout << idx << '\n';
                     return 0;
                 }
             }
         }
+
+        idx++;
     }
 
     return 0;
