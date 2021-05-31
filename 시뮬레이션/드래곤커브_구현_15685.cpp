@@ -5,9 +5,10 @@ using namespace std;
 // 우 상 좌 하
 int dy[4] = {0, -1, 0, 1};
 int dx[4] = {1, 0, -1, 0};
+const int MAX = 101;
 
 vector<int> dragon_dir;
-int map[101][101];
+int map[MAX][MAX];
 int n, x, y, dir, gen;
 
 void drawDragonCurve() {
@@ -49,8 +50,8 @@ int main() {
     int cnt = 0;
 
     // 모든 꼭짓점
-    for (int i = 0; i < 101; i++) {
-        for (int j = 0; j < 101; j++) {
+    for (int i = 0; i < MAX; i++) {
+        for (int j = 0; j < MAX; j++) {
             if (map[i][j] == 1 && map[i][j + 1] == 1 && map[i + 1][j] == 1 && map[i + 1][j + 1] == 1)
                 cnt++;
         }
