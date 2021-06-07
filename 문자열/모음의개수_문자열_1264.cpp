@@ -16,10 +16,7 @@ int main() {
         int cnt = 0;
 
         for (char s : str) {
-            if (s == 'a' || s == 'e' || s == 'i' || s == 'o' || s == 'u'
-            || s == 'A' || s == 'E' || s == 'I' || s == 'O' || s == 'U') {
-                cnt++;
-            }
+            if (s == 'a' || s == 'e' || s == 'i' || s == 'o' || s == 'u' || s == 'A' || s == 'E' || s == 'I' || s == 'O' || s == 'U') cnt++;
         }
 
         cout << cnt << '\n';
