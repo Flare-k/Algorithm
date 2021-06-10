@@ -18,7 +18,7 @@ int main() {
     string ans = to_string(stoi(left) + stoi(right));
     reverse(ans.begin(), ans.end());
 
-    cout << ans;
+    cout << stoi(ans);
 
     return 0;
 }
