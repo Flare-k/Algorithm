@@ -35,7 +35,7 @@ void BFS() {
             if (visit[nx][ny]) continue;
 
             visit[nx][ny] = true;
-            island.push({nx, ny);
+            island.push({nx, ny});
             totalSize++;
         }
     }
