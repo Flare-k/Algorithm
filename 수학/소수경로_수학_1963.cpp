@@ -1,9 +1,12 @@
 #include <iostream>
+#include <queue>
+#include <cstring>
 #include <string>
 using namespace std;
 
 const int MAX = 10000 + 1;
 int arr[MAX];
+bool visit[MAX];
 
 void erathosthenes() {
     arr[0] = 0;
@@ -21,36 +24,72 @@ void erathosthenes() {
     }
 }
 
+struct Node {
+    int num, cnt;
+};
+
+string bfs(int num, int target) {
+    queue<Node> q;
+    memset(visit, false, sizeof(visit));
+
+    q.push({num, 0});
+    visit[num] = true;
+
+
+    while (!q.empty()) {
+        Node now = q.front();
+        q.pop();
+
+        if (now.num == target) {
+            return to_string(now.cnt);
+        }
+
+        int idx = 0;
+        
+        string a = to_string(now.num);
+
+        while (idx != 4) {
+            
+            int tmp = a[idx % 4] - '0';
+            string nextNum = a;
+
+            for (int i = 0; i < 10; i++) {
+                nextNum[idx % 4] = i + '0';
+
+                int tmpNum = stoi(nextNum);
+                
+                if (visit[tmpNum] == true) continue;
+                if (now.num == tmpNum) continue;
+                if (tmpNum < 1000) continue;
+
+                if (arr[tmpNum] == tmpNum) {
+                    q.push({tmpNum, now.cnt + 1});
+                    visit[tmpNum] = true;
+                }
+            }
+
+            idx++;
+        }
+
+    }
+
+    return "Impossible";
+}
+
 int main() {
     ios_base::sync_with_stdio(false);
     cin.tie(0);
 
+    memset(arr, 0, sizeof(arr));
     erathosthenes();
 
-    string a = "1033";
-    string b = "8179";
+    int n;
+    cin >> n;
 
-    int idx = 0;
-    int cnt = 0;
-    while (a != b) {
-        
-        int tmp = a[idx % 4] - '0';
-        string s = a;
-        string saveS;
-
-        for (int i = tmp + 1; i <= 9; i++) {
-            s[idx % 4] = i + '0';
-
-            if (arr[stoi(s)] == stoi(s)) saveS = s;
-        }
-
-        if (saveS.length() != 0) {
-            a = saveS;
-            cnt++;
-            cout << a << '\n';
-        }
-
-        idx++;
+    int num, t;
+    while (n--) {
+        cin >> num >> t;
+        cout << bfs(num, t) << '\n';
     }
 
     return 0;
