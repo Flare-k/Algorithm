@@ -1,8 +1,16 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <bitset>
 using namespace std;
 
+int solution(int n) {
+    int num = bitset<20>(n).count();    // 이진수의 1의 개수 카운팅
+
+    while (bitset<20>(++n).count() != num);
+    return n;
+}
+/*
 int changeBinary(int n) {
    int cntOne = 0;  // 2진수로 변환시 1인 경우 카운트 증가
 
@@ -25,4 +33,9 @@ int solution(int n) {
         }
     }
     return answer;
+}*/
+
+int main() {
+    cout << solution(78);
+    return 0;
 }
