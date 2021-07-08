@@ -4,34 +4,37 @@
 #include <vector>
 using namespace std;
 
-string convertFunc(int num, int N) {
-    if (num == 0) return "0";
+string convertFunc(int last, int N) {
+    if (last == 0) return "0";
+    
+    string str = "0";
 
-    string str = "";
-    while (num != 0) {
-        int mid = num % N;
-        
-        if (mid >= 0 && mid <= 9) str += to_string(mid);
-        else if (mid >= 10 && mid <= 15) str += char(mid + 55);
-        
-        num /= N;
+    for (int i = 1; i <= last; i++) {
+        string tmp = "";
+        int num = i;
+
+        while (num != 0) {
+            int mid = num % N;
+            
+            if (mid >= 0 && mid <= 9) tmp += to_string(mid);
+            else if (mid >= 10 && mid <= 15) tmp += char(mid + 55);
+            
+            num /= N;
+        }
+
+        reverse(tmp.begin(), tmp.end());
+        str += tmp;
     }
-    reverse(str.rbegin(), str.rend());
-
+    
     return str;
 }
 
 string solution(int n, int t, int m, int p) {
     string answer = "";
-    string tmp;
-    int mt = m * t;
+    string str = convertFunc(m * t, n);        // m * t로 하는게 포인트
 
-    for (int num = 0; tmp.length() <= mt; num++) {
-        tmp += convertFunc(num, n);
-    }
-
-    for (int i = 0; i < tmp.length(); i += m) {
-        answer += tmp[i + p - 1];
+    for (int i = 0; i < str.length(); i += m) {
+        answer += str[i + p - 1];
         if (answer.length() == t) break;
     }
 
