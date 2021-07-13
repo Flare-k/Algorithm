@@ -6,7 +6,7 @@
 #include <unordered_map>
 using namespace std;
 
-int cnt[11];
+int cnt[11];    // 각 course 케이스의 최대값 저장
 bool used[27];
 
 unordered_map<string, int> map;
