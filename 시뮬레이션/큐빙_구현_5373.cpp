@@ -4,12 +4,10 @@
 #include <unordered_map>
 using namespace std;
 
-int t;
-int n;
+int t, n;
 char color[6] = {'w', 'r', 'y', 'g', 'b', 'o'};
 char arr[6][3][4];
 char tmp[3][4];
-int idx = 0;
 unordered_map<char, int> m;
 
 enum {
@@ -17,12 +15,12 @@ enum {
 };
 
 void init() {
-    m['U'] = 0;
-    m['F'] = 1;
-    m['D'] = 2;
-    m['L'] = 3;
-    m['R'] = 4;
-    m['B'] = 5;
+    m['U'] = U;
+    m['F'] = F;
+    m['D'] = D;
+    m['L'] = L;
+    m['R'] = R;
+    m['B'] = B;
     
     for (int i = 0; i < 3; i++) {
         for (int j = 0; j < 3; j++) {
@@ -63,8 +61,8 @@ void turnCubeK(char sq, char dir) {
 
 // 인접한 면 돌리기
 void turnCubeSur(char sq, char dir) {
-    char tmpRow[3];
-    fill(tmpRow, tmpRow + 3, 0);
+    char tmpRow[4];
+    fill(tmpRow, tmpRow + 4, 0);
 
     if (sq == 'U') {
         if (dir == '+') { // F->L->B->R->F (1행)
@@ -192,13 +190,13 @@ void turnCubeSur(char sq, char dir) {
 int main() {
     ios_base::sync_with_stdio(false);
     cin.tie(0);
-    
-    init();
 
     cin >> t;
 
     while (t--) {
         cin >> n;
+        init();
+
 
         for (int i = 0; i < n; i++) {
             string cmd;
