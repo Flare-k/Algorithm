@@ -32,7 +32,7 @@ int main() {
             dq.pop_back();
         }
 
-        dq.push_back({arr[i], i});
+        dq.push_back({arr[i], i});  // 최솟값 후보들 저장
         cout << dq.front().value << ' ';
     }
 
