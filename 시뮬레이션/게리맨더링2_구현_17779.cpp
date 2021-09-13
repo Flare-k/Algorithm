@@ -65,7 +65,7 @@ void run(int x, int y, int d1e, int d2e) {
         }
     }
     for (int i = 0; i <= x + d2e; i++) {
-        for (int j = y + 1; j < N; j++) {
+        for (int j = y; j < N; j++) {
             if (mask[i][j] == 0) mask[i][j] = 2;
         }
     }
