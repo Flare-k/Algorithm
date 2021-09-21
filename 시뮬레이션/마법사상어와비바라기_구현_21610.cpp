@@ -119,7 +119,7 @@ int main() {
         for (int j = 1; j <= N; j++) {
             answer += A[i][j];
         }
-    }    
+    }
 
     cout << answer;
 
