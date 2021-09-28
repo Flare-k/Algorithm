@@ -5,7 +5,7 @@
 #include <algorithm>
 using namespace std;
 
-const int MAX = 10; // 21로 변경예정
+const int MAX = 21;
 const int dx[] = {-1, 1, 0, 0};
 const int dy[] = {0, 0, -1, 1};
 int N, M;
@@ -22,6 +22,8 @@ struct Dir {
     int x, y;
 };
 
+vector<Node> blocks;
+
 bool cmp(Node a, Node b) {
     if (a.size> b.size) return true;
     else if (a.size == b.size) {
@@ -34,30 +36,34 @@ bool cmp(Node a, Node b) {
     return false;
 }
 
-vector<Node> blocks;
-
 void rotateArray() {
     memcpy(cpy, arr, sizeof(arr));
 
     for (int i = 0; i < N; i++) {
         for (int j = 0; j < N; j++) {
-            arr[N-j+1][i] = cpy[i][j];
+            arr[N-j-1][i] = cpy[i][j];
         }
     }
 }
 
 void gravity() {
-    int j;
     for (int i = 0; i < N; i++) {
-        j = N - 1;
-
-        while (1) {
-            if (arr[j][i])
+        for (int j = N - 1; j >= 1; j--) {
+            if (arr[j][i] == -2) {
+                for (int k = j - 1; k >= 0; k--) {
+                    if (arr[k][i] >= 0) {
+                        arr[j][i] = arr[k][i];
+                        arr[k][i] = -2;
+                        break;
+                    }
+                    else if (arr[k][i] == -1) break;
+                }
+            }
         }
     }
 }
 
-void run(int x, int y, int color) {
+void findBlockGroups(int x, int y, int color) {
     queue<Dir> q;
 
     visit[x][y] = true;
@@ -77,7 +83,7 @@ void run(int x, int y, int color) {
             if (visit[nx][ny] || arr[nx][ny] < 0) continue;
             if (arr[nx][ny] != 0 && arr[nx][ny] != color) continue;
             
-            if (arr[nx][ny] == 0) rainbow++;
+            if (arr[nx][ny] == 0) {rainbow++;}
 
             size++;
             visit[nx][ny] = true;
@@ -85,12 +91,23 @@ void run(int x, int y, int color) {
         }
     }
     
-    blocks.push_back({color, x, y, size, rainbow});
+    // 무지개 방문 초기화
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < N; j++) {
+            if (arr[i][j] == 0 && visit[i][j]) visit[i][j] = false;
+        }
+    }
+
+    if (size >= 2)
+        blocks.push_back({color, x, y, size, rainbow});
 }
 
-void removeBlock(int x, int y) {
+void removeBlock(int x, int y, int color) {
+    memset(visit, false, sizeof(visit));
     queue<Dir> q;
-
+    
+    visit[x][y] = true;
+    arr[x][y] = -2;
     q.push({x, y});
 
     while (!q.empty()) {
@@ -102,10 +119,25 @@ void removeBlock(int x, int y) {
             int ny = now.y + dy[i];
 
             if (nx < 0 || ny < 0 || nx >= N || ny >= N) continue;
-            if (arr[nx][ny] != color) continue;
+            if (arr[nx][ny] != 0 && arr[nx][ny] != color) continue;
+            if (visit[nx][ny] == true) continue;
             
+            visit[nx][ny] = true;
             arr[nx][ny] = -2;
             q.push({nx, ny});
+        }
+    }
+}
+
+void checkBlock() {
+    blocks.clear();
+    memset(visit, false, sizeof(visit));
+
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < N; j++) {
+            if (!visit[i][j] && arr[i][j] > 0) {
+                findBlockGroups(i, j, arr[i][j]);
+            }
         }
     }
 }
@@ -123,33 +155,43 @@ int main() {
     }
 
     while (1) {
-        int cnt = 0;
-
-        for (int i = 0; i < N; i++) {
-            for (int j = 0; j < N; j++) {
-                cnt++;
-                if (!visit[i][j] && arr[i][j] > 0) {
-                    run(i, j, arr[i][j]);
-                    cnt--;
-                }
-            }
-        }
-        
-        if (cnt == N*N) break;
-
         // 큰 블록 찾기
+        checkBlock();
+        if (blocks.size() == 0) break;
+
         sort(blocks.begin(), blocks.end(), cmp);
 
         // 블록 제거
-        Node bigBlock = blocks.front();
-        removeBlock(bigBlock.x, bigBlock.y);
-        score += (bigBlock.size * bigBlock.size);
+        Node big = blocks.front();
+        removeBlock(big.x, big.y, big.color);
+        score += (big.size * big.size);
 
-        gravity();  // 중력
+        gravity();      // 중력
         rotateArray();  // 회전
-        gravity();  // 중력
+        gravity();      // 중력
     }
 
+    cout << score;
 
     return 0;
 }
+/*
+6 3
+1 1 1 0 0 0
+1 1 1 0 0 0
+1 1 3 0 0 0
+0 0 0 2 2 2
+0 0 0 2 2 2
+0 0 0 2 2 2
+
+> 793
+
+5 3
+0 0 0 0 1
+-1 -1 0 -1 0
+-1 -1 3 -1 -1
+-1 -1 0 -1 -1
+0 0 2 0 0
+
+> 74
+*/
