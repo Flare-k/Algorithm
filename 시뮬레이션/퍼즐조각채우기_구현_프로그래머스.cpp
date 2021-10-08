@@ -11,22 +11,12 @@ struct Node {
 const int dx[] = {-1, 1, 0, 0};
 const int dy[] = {0, 0, -1, 1};
 const int MAX = 51;
-vector<vector<int>> cptable;
-vector<vector<Node>> blocks;
 bool visit[MAX][MAX];
-int n;
+vector<vector<Node>> blocks;
 
-// 시계방향
-void rotatePuzzle(vector<vector<int>>& rotate, vector<vector<int>>& game_board) {
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < n; j++) {
-            rotate[i][j] = game_board[j][n-i-1];
-        }
-    }
-}
-
-void findBlock(int x, int y, vector<Node>& block) { 
-    if (visit[x][y] || cptable[x][y] == 0) return;
+void findBlock(int x, int y, int n, vector<Node>& block, vector<vector<int>> table) { 
+    if (visit[x][y]) return;
+    if table[x][y] == 0) return;
 
     visit[x][y] = true;
     block.push_back({x, y});
@@ -36,11 +26,12 @@ void findBlock(int x, int y, vector<Node>& block) {
         int ny = y + dy[i];
 
         if (nx < 0 || ny < 0 || nx >= n || ny >= n) continue;
-        findBlock(nx, ny, block);
+        findBlock(nx, ny, n, block, table);
     }
 }
 
 bool solve(vector<vector<int>>& game_board, vector<Node> block) {
+    int n = game_board.size();
     for (int r = -n+1; r < n; r++) {
         for (int c = -n+1; c < n; c++) {
             vector<Node> fitBlock;
@@ -50,8 +41,8 @@ bool solve(vector<vector<int>>& game_board, vector<Node> block) {
             }
 
             int cnt = 0;
-            for (int idx = 0; idx < fitBlock.size(); idx++) {
-                Node now = fitBlock[idx];
+            for (int i = 0; i < fitBlock.size(); i++) {
+                Node now = fitBlock[i];
 
                 if (now.x < 0 || now.y < 0 || now.x >= n || now.y >= n) break;
                 if (game_board[now.x][now.y] == 1) break;
@@ -79,10 +70,10 @@ bool solve(vector<vector<int>>& game_board, vector<Node> block) {
                         }
                     }
 
-                    if (!fit) break;
+                    if (fit == false) break;
                 }
 
-                if (!fit) {
+                if (fit == false) {
                     for (auto f : fitBlock) {
                         game_board[f.x][f.y] = 0;
                     }
@@ -96,38 +87,41 @@ bool solve(vector<vector<int>>& game_board, vector<Node> block) {
 }
 
 int solution(vector<vector<int>> game_board, vector<vector<int>> table) {
-
-    cptable = table;
-
-    n = table.size();
-
+    int n = table.size();
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
             if (table[i][j] == 1) {
                 vector<Node> block;
-                findBlock(i, j, block);
-                if (block.size() > 0) blocks.push_back(block);
+                findBlock(i, j, n, block, table);
+                if (block.size()) blocks.push_back(block);
             }
         }
     }
 
-    vector<vector<int>> rotateBoard(n, vector<int>(n, 0));
+    vector<vector<int>> rotate_board(n, vector<int>(n, 0));
     vector<bool> checkBlock(blocks.size(), false);
     int answer = 0;
 
     for (int i = 0; i < 4; i++) {
-        rotatePuzzle(rotateBoard, game_board);
-
-        for (int i = 0; i < blocks.size(); i++) {
-            bool flag = solve(rotateBoard, blocks[i]);
-
-            if (!checkBlock[i] && flag == true) {
-                answer += blocks[i].size();
-                checkBlock[i] = true;
+        
+        for(int r = 0; r < n; r++) {
+            for(int c = 0; c < n; c++) {
+                rotate_board[r][c] = game_board[c][n-r-1];
             }
         }
 
-        game_board = rotateBoard;
+        for (int j = 0; j < blocks.size(); j++) {
+            if (!checkBlock[j] && solve(rotate_board, blocks[j])) {
+                answer += blocks[j].size();
+                checkBlock[j] = true;
+            }
+        }
+
+        for(int r = 0; r < n; r++) {
+            for(int c = 0; c < n; c++) {
+                game_board[r][c] = rotate_board[r][c];
+            }
+        }
     }
 
     return answer;
