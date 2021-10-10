@@ -3,78 +3,76 @@
 #include <iostream>
 #include <queue>
 #define endl "\n"
-#define MAX 100
+#define MAX 10
 using namespace std;
 
 int Max_Value;
-int Arr[MAX];
-bool Flag[10001];
+int arr[MAX];
+bool flag[10001];
 queue<int> Q[10];
 
 void Print() {
-   cout << "###################################################################"
-           "#################################################"
-        << endl;
-   int Cnt = 0;
-   for (int i = 0; i < MAX; i++) {
-      printf("%6d ", Arr[i]);
-      Cnt++;
-      if (Cnt == 20) {
-         Cnt = 0;
-         cout << endl;
-      }
-   }
-   cout << "###################################################################"
-           "#################################################"
-        << endl;
-   cout << endl;
+    int cnt = 0;
+    for (int i = 0; i < MAX; i++) {
+        printf("%6d ", arr[i]);
+        cnt++;
+        if (cnt == 20) cnt = 0;
+    }
+    cout << endl;
 }
 
 void Radix_Sort() {
-   int Radix = 1;
-   while (1) {
-      if (Radix >= Max_Value) break;
-      Radix = Radix * 10;
-   }  // 최대자릿수만큼 10씩 곱한다. 만약 Max_Value가 1234라면 Radix는 10000이
-      // 됨
-   for (int i = 1; i < Radix; i = i * 10) {
-      for (int j = 0; j < MAX; j++) {
-         int K;
-         if (Arr[j] < i)
-            K = 0;
-         else
-            K = (Arr[j] / i) % 10;
-         Q[K].push(Arr[j]);
-      }
+    int radix = 1;
 
-      int Idx = 0;
-      for (int j = 0; j < 10; j++) {
-         while (Q[j].empty() == 0) {
-            Arr[Idx] = Q[j].front();
-            Q[j].pop();
-            Idx++;
-         }
-      }
-   }
+    // 최대자릿수만큼 10씩 곱한다. 만약 Max_Value가 1234라면 Radix는 10000이 됨
+    while (1) {
+        if (radix >= Max_Value) break;
+        radix *= 10;
+    }
+
+    for (int i = 1; i < radix; i *= 10) {
+        for (int j = 0; j < MAX; j++) {
+            int K;
+
+            if (arr[j] < i) K = 0;
+            else K = (arr[j] / i) % 10;
+
+            Q[K].push(arr[j]);
+        }
+
+        int idx = 0;
+        for (int j = 0; j < 10; j++) {
+            while (!Q[j].empty()) {
+                arr[idx] = Q[j].front();
+                Q[j].pop();
+                idx++;
+            }
+        }
+    }
 }
 
 int main(void) {
-   srand((unsigned)time(NULL));
-   for (int i = 0; i < MAX;) {
-      Arr[i] = (rand() % 10000) + 1;
-      if (Flag[Arr[i]] == false) {
-         Flag[Arr[i]] = true;
-         if (Max_Value < Arr[i]) Max_Value = Arr[i];
 
-         i++;
-      }
-   }
+    srand((unsigned)time(NULL));
+    
+    for (int i = 0; i < MAX;) {
+        arr[i] = (rand() % 10000) + 1;
 
-   cout << "[ Initialize Array State ] " << endl;
-   Print();
-   Radix_Sort();
-   cout << "[ After Sort Array State ] " << endl;
-   Print();
+        if (flag[arr[i]] == false) {
+            flag[arr[i]] = true;
+            if (Max_Value < arr[i]) Max_Value = arr[i];
 
-   return 0;
+            i++;
+        }
+    }
+
+    cout << "[ Initialize array State ] " << endl;
+    Print();
+
+    Radix_Sort();
+
+    cout << "\n[ After Sort array State ] " << endl;
+    Print();
+
+    return 0;
 }
