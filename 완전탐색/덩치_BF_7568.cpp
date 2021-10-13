@@ -11,18 +11,18 @@ using namespace std;
 */
 
 vector<int> compare(vector<pair<int, int>> person) {
-   vector<int> answer;
+    vector<int> answer;
 
-   for (int i = 0; i < person.size(); i++) {
-      int rank = 1;  // 덩치 등수 표현
-      for (int j = 0; j < person.size(); j++) {
-         if (person[i].first < person[j].first &&
-             person[i].second < person[j].second) {
-            rank++;
-         }
-      }
-      answer.push_back(rank);
-   }
+    for (int i = 0; i < person.size(); i++) {
+        int rank = 1;  // 덩치 등수 표현
+        for (int j = 0; j < person.size(); j++) {
+            if (person[i].first < person[j].first &&
+                person[i].second < person[j].second) {
+                rank++;
+            }
+        }
+        answer.push_back(rank);
+    }
 
    return answer;
 }
