@@ -1,10 +1,22 @@
 #include <iostream>
-#include <vector>
+#include <cstring>
 using namespace std;
 
 // Dynamic programming으로 풀이하기
+const int MAX = 31;
 int n, k;
-vector<int> dp[31];
+int dp[MAX][MAX];
+
+int comb(int n, int k) {
+    if (n == k || k == 0) return 1;
+
+    int result = dp[n][k];
+
+    if (result != -1) return result;
+
+    result = comb(n - 1, k - 1) + comb(n - 1, k);
+    return result;
+}
 
 int main() {
     ios_base::sync_with_stdio(false);
@@ -12,20 +24,8 @@ int main() {
 
     cin >> n >> k;
 
-    dp[1].resize(1);
-    dp[1][0] = 1;
-
-    for (int i = 2; i <= n; i++) {
-        dp[i].resize(i);
-        dp[i][0] = 1;
-        dp[i][i - 1] = 1;
-
-        for (int j = 0; j < i-2; j++) {
-            dp[i][j+1] = dp[i-1][j] + dp[i-1][j+1];
-        }
-    }
-
-    cout << dp[n][k - 1];
-
+    memset(dp, -1, sizeof(dp));
+    cout << comb(n - 1, k - 1);
+    
     return 0;
 }
