@@ -11,29 +11,21 @@ int main() {
 
     cin >> R >> C >> W;
 
-    T = R + W;
     arr[1][1] = 1;
-    arr[2][1] = 1;
-    arr[2][2] = 1;
 
-    for (int i = 3; i <= T; i++) {
-        arr[i][1] = 1;
-        arr[i][i] = 1;
-        for (int j = 2; j <= i; j++) {
-            arr[i][j] = arr[i-1][j-1] + arr[i-1][j];
+    for (int i = 1; i < MAX; i++) {
+        for (int j = 1; j <= i; j++) {
+            if (j == 1 || j == i) arr[i][j] = 1;
+            else arr[i][j] = arr[i-1][j-1] + arr[i-1][j];
         }
     }
 
     int sum = 0;
-    int k = C+1;
-    for (int i = R; i < T; i++) {
-        for (int j = C; j < k; j++) {
-            sum += arr[i][j];
+    for (int i = 0; i < W; i++) {
+        for (int j = 0; j <= i; j++) {
+            sum += arr[R + i][C + j];
         }
-        k++;
     }
-
-    cout << sum;
 
     return 0;
 }
