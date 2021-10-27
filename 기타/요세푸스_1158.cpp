@@ -6,27 +6,31 @@ using namespace std;
 int main() {
     ios_base::sync_with_stdio(0);
     cin.tie(0);
+    
     int n, k;
-    cin>>n>>k;
+    cin >> n >> k;
+
     vector<int> arr;
-    for(int i=1; i<=n; i++)
+
+    for (int i = 1; i <= n; i++) {
         arr.push_back(i);
+    }
     
-    
-    int idx = k-1;
+    int idx = k - 1;
     int copy_n = n;
-    cout<<"<";
-    for(int i=0; i<n; i++){
-        cout<<arr[idx];
-        if(i != n-1)
-            cout<<", ";
-        else
-            cout<<">\n";
+
+    cout << "<";
+
+    for (int i = 0; i < n; i++) {
+        cout << arr[idx];
+
+        if(i != n - 1) cout << ", ";
+        else cout << ">\n";
         
-        arr.erase(arr.begin()+idx);
-        idx += (k-1);
-        if(--copy_n > 0)
-            idx %= copy_n;
+        arr.erase(arr.begin() + idx);
+        idx += (k - 1);
+
+        if (--copy_n > 0) idx %= copy_n;
     }
     
     return 0;
