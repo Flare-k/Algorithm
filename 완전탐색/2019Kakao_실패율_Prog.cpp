@@ -3,28 +3,25 @@
 #include <vector>
 using namespace std;
 
-bool comp(const pair<double,int> &a, const pair<double, int> &b) {
-    //실패율 먼저 비교(내림차순)
-    if (a.first > b.first) {
-        return true;
+struct Node {
+    double failure;
+    int stage;
+};
+
+bool comp(const Node &a, const Node &b) {
+    // 실패율 먼저 비교(내림차순)
+    if (a.failure > b.failure) return true;
+    else if (a.failure == b.failure) {
+        // 실패율이 같다면 스테이지 번호를 비교(오름차순)
+        if (a.stage < b.stage) return true;
+        else return false;
     } 
-    else if (a.first == b.first) {
-        //실패율이 같다면 스테이지 번호를 비교(오름차순)
-        if (a.second < b.second) {
-            return true;
-        } 
-        else {
-            return false;
-        }
-    } 
-    else {
-        return false;
-    }
+    else return false;
 }
  
 vector<int> solution(int N, vector<int> stages) {
     vector<int> answer;
-    vector<pair<double,int> > failrate;
+    vector<Node> failrate;
     
     sort(stages.begin(),stages.end());
     
@@ -35,7 +32,7 @@ vector<int> solution(int N, vector<int> stages) {
     for (int i = 1; i <= N; i++) {
         //i번째 스테이지에 도달한 유저가 없는 경우 실패율은 0
         if(usernum == 0) {
-            failrate.push_back(make_pair(0, i));
+            failrate.push_back({0, i});
             continue;
         }
 
@@ -47,10 +44,10 @@ vector<int> solution(int N, vector<int> stages) {
             index++;
         }
 
-        double rate = (double) failcnt/usernum;
-        failrate.push_back(make_pair(rate, i)); //각 스테이지에 해당하는 실패율 저장
+        double rate = (double) (failcnt / usernum);
+        failrate.push_back({rate, i}); //각 스테이지에 해당하는 실패율 저장
         
-        //i번째까지만 도달한 사용사들의 수를 빼준다.
+        // i번째 까지만 도달한 사용사들의 수를 빼준다.
         usernum -= failcnt;
     }
     
