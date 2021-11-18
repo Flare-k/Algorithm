@@ -7,20 +7,25 @@ using namespace std;
    하지만 최적의 해를 찾을 수 없을 가능성이 다분하다.
 */
 int main() {
-   ios_base::sync_with_stdio(false);
-   cin.tie(0);
-   cout.tie(0);
-   int n;
-   cin >> n;
-   n = 1000 - n;
-   int count = 0;
+    ios_base::sync_with_stdio(false);
+    cin.tie(0);
+    cout.tie(0);
 
-   int arr[6] = {500, 100, 50, 10, 5, 1};
+    int n;
+    cin >> n;
 
-   for (int i = 0; i < sizeof(arr) / sizeof(int); i++) {
-      count += (n / arr[i]);
-      n %= arr[i];
-   }
-   cout << count << endl;
-   return 0;
+    n = 1000 - n;
+
+    int count = 0;
+
+    int arr[6] = {500, 100, 50, 10, 5, 1};
+
+    for (int i = 0; i < sizeof(arr) / sizeof(int); i++) {
+        count += (n / arr[i]);
+        n %= arr[i];
+    }
+    
+    cout << count << endl;
+
+    return 0;
 }

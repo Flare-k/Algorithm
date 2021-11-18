@@ -3,18 +3,19 @@
 using namespace std;
 
 int main() {
-   int a, b;
-   cin >> a >> b;
-   int cnt = 0;
-   while (a != 1) {
-      if (a % b == 0) {
-         a /= b;
-      } else {
-         a -= 1;
-      }
-      cnt++;
-   }
+    int a, b;
+    cin >> a >> b;
 
-   cout << cnt << endl;
-   return 0;
+    int cnt = 0;
+
+    while (a != 1) {
+        if (a % b == 0) a /= b;
+        else a -= 1;
+        
+        cnt++;
+    }
+
+    cout << cnt << endl;
+    
+    return 0;
 }

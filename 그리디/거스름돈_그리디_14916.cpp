@@ -22,15 +22,16 @@ int main() {
         cout << charge;
     }
     else {
-       while (n != 0) {
-           n -= 2;
-           charge++;
-           if (n % 5 == 0) {
-               charge += (n / 5);
-               n %= 5;
-           }
-       }
-       cout << charge;
+        while (n != 0) {
+            n -= 2;
+            charge++;
+            
+            if (n % 5 == 0) {
+                charge += (n / 5);
+                n %= 5;
+            }
+        }
+        cout << charge;
     }
 
     return 0;
