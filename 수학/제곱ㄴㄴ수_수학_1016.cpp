@@ -19,11 +19,10 @@ int main() {
 
         while (n * i * i <= maxx) {
             arr[n * i * i - minn] = 1;
-            cout << n * i * i - minn << ' ';
             n++;
         }
     }
-    cout << '\n';
+
     for (int i = 0; i <= maxx - minn; i++) {
         if (arr[i] == 0) cnt++;
     }
