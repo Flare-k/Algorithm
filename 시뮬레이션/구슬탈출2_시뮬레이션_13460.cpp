@@ -1,79 +1,91 @@
 #include <iostream>
+#include <algorithm>
 #include <queue>
-#include <utility>
-
+#include <set>
+#include <tuple>
 using namespace std;
 
+const int MAX = 11;
+const int dx[4] = {-1, 1, 0, 0};
+const int dy[4] = {0, 0, -1, 1};
+int N, M;
+int map[MAX][MAX];
 
-const int dx[4] = {0, 0, -1, 1};
-const int dy[4] = {-1, 1, 0, 0};
-queue<pair<pair<int, int>, pair<int, int>>> marble;
-bool visit[11][11][11][11] = {false};
-char board[11][11];
-int rx, ry, bx, by;
+struct Marble {
+    int rx, ry;
+    int bx, by;
+};
+
+enum {
+    EMPTY, WALL, HOLE, RED, BLUE
+};
+
+Marble marble;
+using edge = tuple <int, int, int, int>;
+set<edge> visit;
 
 
-int BFS() {
+bool samePos(int x, int y, int r, int c) {
+    if (x == r && y == c) return true;
+    return false;
+}
+
+int run() {
+    queue<Marble> q;
+    q.push(marble);
     int cnt = 0;
-    marble.push({{rx, ry}, {bx, by}});
-    visit[rx][ry][bx][by] = true;
 
-    while (!marble.empty()) {
-        int size = marble.size();
+    while (!q.empty()) {
+        int size = q.size();
 
-        while (size--) {
-            int redX = marble.front().first.first;
-            int redY = marble.front().first.second;
+        while (size--){
+            Marble now = q.front();
+            q.pop();
 
-            int blueX = marble.front().second.first;
-            int blueY = marble.front().second.second;
-            
-            marble.pop();
+            int rx = now.rx, ry = now.ry;
+            int bx = now.bx, by = now.by;
 
-            // 빨간 구슬만 구멍에 위치한다면 최소 횟수 리턴
-            if (board[redX][redY] == 'O' && board[redX][redY] != board[blueX][blueY]) {
+            if (map[rx][ry] == HOLE && map[rx][ry] != map[bx][by]) {
                 return cnt;
             }
 
             for (int i = 0; i < 4; i++) {
-                int n_redX = redX;
-                int n_redY = redY;
+                int nrx = rx, nry = ry;
+                int nbx = bx, nby = by;
 
-                int n_blueX = blueX;
-                int n_blueY = blueY;
-
-                // 해당 방향으로 #이 나올때까지 이동하기 위해 while문 이용.. 
-                while (board[n_redX + dx[i]][n_redY + dy[i]] != '#' && board[n_redX][n_redY] != 'O') {
-                    n_redX += dx[i];
-                    n_redY += dy[i];
+                // 이동
+                while (map[nrx + dx[i]][nry + dy[i]] != WALL && map[nrx][nry] != HOLE) {
+                    nrx += dx[i];
+                    nry += dy[i];
+                }
+                while (map[nbx + dx[i]][nby + dy[i]] != WALL && map[nbx][nby] != HOLE) {
+                    nbx += dx[i];
+                    nby += dy[i];
                 }
 
-                while (board[n_blueX + dx[i]][n_blueY + dy[i]] != '#' && board[n_blueX][n_blueY] != 'O') {
-                    n_blueX += dx[i];
-                    n_blueY += dy[i];
-                }
+                // 구슬끼리 만나는 경우
+                if (samePos(nrx, nry, nbx, nby)) {
+                    if (map[nrx][nry] == HOLE && map[nbx][nby] == HOLE) continue;
+                    int red_dist = abs(nrx - rx) + abs(nry - ry);
+                    int blue_dist = abs(nbx - bx) + abs(nby - by);
 
-                // 빨간 구슬과 파란 구슬이 만나는 경우
-                if (n_redX == n_blueX && n_redY == n_blueY) {
-                    if (board[n_redX][n_blueY] == 'O') continue;
-                    // 많이 이동한 경우를 한칸 뒤로 이동시킨다.
-                    if (abs(n_redX - redX) + abs(n_redY - redY) < abs(n_blueX - blueX) + abs(n_blueY - blueY)) {
-                        n_blueX -= dx[i];
-                        n_blueY -= dy[i];
+                    if (red_dist < blue_dist) {
+                        nbx -= dx[i];
+                        nby -= dy[i];
                     }
                     else {
-                        n_redX -= dx[i];
-                        n_redY -= dy[i];
+                        nrx -= dx[i];
+                        nry -= dy[i];
                     }
                 }
 
-                if (visit[n_redX][n_redY][n_blueX][n_blueY]) continue;
+                if (visit.find({nrx, nry, nbx, nby}) != visit.end()) continue;  // 없으면 end()
 
-                marble.push({{n_redX, n_redY}, {n_blueX, n_blueY}});
-                visit[n_redX][n_redY][n_blueX][n_blueY] = true;
+                q.push({nrx, nry, nbx, nby});
+                visit.insert({nrx, nry, nbx, nby});
             }
-            
         }
+
         if (cnt == 10) return -1;
         cnt++;
     }
@@ -81,29 +93,40 @@ int BFS() {
     return -1;
 }
 
+
 int main() {
     ios_base::sync_with_stdio(false);
-    cin.tie(NULL);
-    cout.tie(NULL);
+    cin.tie(0);
 
-    int r, c;
-    cin >> r >> c;
+    cin >> N >> M;
 
-    for (int i = 0; i < r; i++) {
-        for (int j = 0; j < c; j++) {
-            cin >> board[i][j];
-            if (board[i][j] == 'R') {
-                rx = i;
-                ry = j;
-            } 
-            else if (board[i][j] == 'B'){
-                bx = i;
-                by = j;
+    char ch;
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < M; j++) {
+            cin >> ch;
+            if (ch == '#') {
+                map[i][j] = WALL;
+            }
+            else if (ch == '.') {
+                map[i][j] = EMPTY;
+            }
+            else if (ch == 'O') {
+                map[i][j] = HOLE;
+            }
+            else if (ch == 'R') {
+                marble.rx = i;
+                marble.ry = j;
+                map[i][j] = RED;
+            }
+            else if (ch == 'B') {
+                marble.bx = i;
+                marble.by = j;
+                map[i][j] = BLUE;
             }
         }
     }
 
-    cout << BFS();
+    cout << run();
 
     return 0;
 }
