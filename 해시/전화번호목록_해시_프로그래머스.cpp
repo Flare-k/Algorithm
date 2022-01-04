@@ -10,16 +10,16 @@ unordered_map<string, int> m;
 
 bool solution(vector<string> phone_book) {
     
-    for (string phone : phone_book) {
-        m[phone] = 1;
+    for (string phone_number : phone_book) {
+        m[phone_number] = true;
     }
 
-    for (int i = 0; i < phone_book.size(); i++) {
+    for (string phone_number : phone_book) {
         string tmp = "";
+        for (char ch : phone_number) {
+            tmp += ch;
 
-        for (int j = 0; j < phone_book[i].length(); j++) {
-            tmp += phone_book[i][j];
-            if (m[tmp] && tmp != phone_book[i]) return false;
+            if (m.count(tmp) && tmp != phone_number) return false;
         }
     }
 
