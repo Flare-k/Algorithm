@@ -1,44 +1,38 @@
 #include <iostream>
 #include <vector>
-#define ll long long
 using namespace std;
 
-vector<ll> test;
-vector<ll> teacher;
+int N;
+vector<int> classes;
+int mgt, sub;
 
 int main() {
     ios_base::sync_with_stdio(false);
-    cin.tie(NULL);
-    cout.tie(NULL);
+    cin.tie(0);
 
-    int n;
-    cin >> n;
+    cin >> N;
 
-    for (int i = 0; i < n; i++) {
-        ll t;
-        cin >> t;
-        test.push_back(t);
+    classes.resize(N);
+
+    for (int i = 0; i < N; i++) {
+        cin >> classes[i];
     }
 
-    for (int i = 0; i < 2; i++) {
-        ll t;
-        cin >> t;
-        teacher.push_back(t);
+    cin >> mgt >> sub;
+
+    long long cnt = N;
+
+    for (int i = 0; i < N; i++) {
+        classes[i] -= mgt;
+        
+        if (classes[i] <= 0) continue;
+
+        if (classes[i] < sub) cnt++;
+        else if (classes[i] % sub == 0) cnt += (classes[i] / sub);
+        else cnt += (classes[i] / sub + 1);
     }
 
-    ll ans = 0;
-
-    for (int i = 0; i < n; i++) {
-        ans ++; // 총 감독
-        test[i] -= teacher.front();
-
-        if (test[i] > 0) {
-            if (test[i] % teacher[1] == 0) ans += (test[i] / teacher[1]);
-            else ans += (test[i] / teacher[1]) + 1;
-        }
-    }
-
-    cout << ans;
+    cout << cnt;
 
     return 0;
 }
