@@ -1,8 +1,5 @@
 #include <iostream>
 #include <algorithm>
-#include <queue>
-#include <vector>
-#include <cstring>
 using namespace std;
 
 // 벽을 세 개 세웠을 때의 최대 안전영역의 크기는?
@@ -11,8 +8,6 @@ const int dx[] = {-1, 0, 1, 0};
 const int dy[] = {0, 1, 0, -1};
 int N, M;
 int map[MAX][MAX];
-int tmp_map[MAX][MAX];
-bool clean[MAX][MAX];
 int answer;
 enum {
     EMPTY, WALL
@@ -22,54 +17,41 @@ struct Robot {
     int x, y, dir;
 };
 
-queue<Robot> q;
+Robot robot;
 
 void run() {
 
-    while (!q.empty()) {
-        Robot now = q.front();
-        q.pop();
+    while (1) {
 
-        // 1. 현재 위치 청소
-        if (!clean[now.x][now.y]) answer++;
-        clean[now.x][now.y] = true;
+        if (map[robot.x][robot.y] == EMPTY) {
+            map[robot.x][robot.y] = 2;
+            answer++;
+        }
 
-        int dir = now.dir;
-        int nx, ny;
-        int cnt = 0, wall = 0, _clean = 0;
+        int dir = robot.dir;
         bool flag = false;
 
-        // 2. 현재 위치에서 현재 방향을 기준으로 왼쪽 방향부터 차례대로 인접한 칸을 탐색
-        // 0:북, 1:동, 2:남, 3:서
-        while (cnt < 4) {
-            cnt++;
+        for (int i = 0; i < 4; i++) {
             dir = dir - 1 < 0 ? 3 : dir - 1;
 
-            nx = now.x + dx[dir];
-            ny = now.y + dy[dir];
+            int nx = robot.x + dx[dir];
+            int ny = robot.y + dy[dir];
 
-            if (nx < 0 || nx < 0 || nx >= N || ny >= M) continue;
-            if (map[nx][ny] == WALL) wall++;
-            if (map[nx][ny] == EMPTY && clean[nx][ny]) _clean++;
-            if (map[nx][ny] == EMPTY && !clean[nx][ny]) {
+            if (nx < 0 || ny < 0 || nx >= N || ny >= M) continue;
+            if (map[nx][ny] == EMPTY) {
+                robot = {nx, ny, dir};
                 flag = true;
                 break;
             }
         }
 
-        if (flag) {
-            q.push({nx, ny, dir});
-        }
-        else {
-            if (wall <= 4 || _clean <= 4) {
-                int d = now.dir % 2 == 0 ? 2 - now.dir : 4 - now.dir;
-                nx = now.x + dx[d];
-                ny = now.y + dy[d];
+        if (flag) continue;
 
-                if (map[nx][ny] == EMPTY) q.push({nx, ny, now.dir});
-                else if (map[nx][ny] == WALL) return;
-            }
-        }
+        int d = dir % 2 == 0 ? 2 - dir : 4 - dir;
+        robot.x += dx[d];
+        robot.y += dy[d];
+
+        if (map[robot.x][robot.y] == WALL) break;
     }
 }
 
@@ -81,7 +63,8 @@ int main() {
 
     int x, y, dir;
     cin >> x >> y >> dir;
-    q.push({x, y, dir});
+
+    robot = {x, y, dir};
 
     for (int i = 0; i < N; i++) {
         for (int j = 0; j < M; j++) {
