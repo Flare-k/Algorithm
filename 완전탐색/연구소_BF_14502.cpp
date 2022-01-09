@@ -1,121 +1,111 @@
-#include <algorithm>
 #include <iostream>
+#include <algorithm>
 #include <queue>
-#include <utility>
 #include <vector>
+#include <cstring>
 using namespace std;
-/*
-그냥 1을 3개씩 배치해서 무작정 다 구해볼까...
-*/
 
-int n, m;
-const int MAX = 10;
-int arr[MAX][MAX];
-int subArr[MAX][MAX];
+// 벽을 세 개 세웠을 때의 최대 안전영역의 크기는?
+const int MAX = 9;
+const int dx[] = {-1, 1, 0, 0};
+const int dy[] = {0, 0, -1, 1};
+int N, M;
+int map[MAX][MAX];
+int tmp_map[MAX][MAX];
+bool visit[MAX][MAX];
+int answer;
+enum {
+    EMPTY, WALL, VIRUS
+};
 
-vector<pair<int, int> > vec;
+struct Node {
+    int x, y;
+};
 
-const int dx[4] = {0, 0, -1, 1};
-const int dy[4] = {-1, 1, 0, 0};
+void checkVirus(int x, int y) {
+    queue<Node> q;
+    q.push({x, y});
+    visit[x][y] = true;
 
-int answer = 0;
-
-int BFS() {
-    queue<pair<int, int> > que;
-    
-    for (int i = 0; i < vec.size(); i++) {
-        que.push(make_pair(vec[i].first, vec[i].second));
-    }
-
-    while (!que.empty()) {
-        int x = que.front().first;   // 현재 2인 곳의 x좌표
-        int y = que.front().second;  // 현재 2인 곳의 y좌표
-        que.pop();
+    while (!q.empty()) {
+        Node now = q.front();
+        q.pop();
 
         for (int i = 0; i < 4; i++) {
-            int nx = x + dx[i];
-            int ny = y + dy[i];
+            int nx = now.x + dx[i];
+            int ny = now.y + dy[i];
 
-            if (nx < 0 || ny < 0 || nx >= n || ny >= m) continue;
-
-            if (subArr[nx][ny] == 0) {  // 벽 3개를 다 배치하고나서
-                subArr[nx][ny] = 2;  // 현재 2인 x,y에서 상하좌우에 0이 존재한다면
-                                    // 2로 전염시킨다.
-                que.push(make_pair(nx, ny));
+            if (nx < 0 || ny < 0 || nx >= N || ny >= M) continue;
+            if (visit[nx][ny]) continue;
+            
+            if (tmp_map[nx][ny] == EMPTY) {
+                tmp_map[nx][ny] = VIRUS;
+                visit[nx][ny] = true;
+                q.push({nx, ny});
             }
         }
-
     }
-
-    int size = 0;
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < m; j++) {
-            if (subArr[i][j] == 0) {
-                size++;
-            }
-        }
-    }  // 전염시킬 곳은 다 전염시키고 나서 0인 곳에 대해서 카운팅을 한다.
-    answer = max(size, answer);  // 지금까지 나온 answer 중에서 최대값을 가린다.
-    
-    return answer;
 }
 
-int wall(int cnt) {
-    if (cnt == 3) {
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < m; j++) {
-                subArr[i][j] = arr[i][j];
-            }  // cnt == 3 즉, 벽을 세개 모두 세운 결과에 대해 subArr에 복사해서
-                // BFS 함수로 넘어간다.
-        }
-        return BFS();
-    }
-
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < m; j++) {
-            if (arr[i][j] == 0) {
-                arr[i][j] = 1;    //만약 0이라면 벽을 세운다.
-                wall(cnt + 1);    // 벽이 3개 세워질 동안 재귀
-                arr[i][j] = 0;  // 재귀 끝나면 다시 원상복구
-            }
+int checkSafetyArea() {
+    int cnt = 0;
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < M; j++) {
+            if (tmp_map[i][j] == EMPTY) cnt++;
         }
     }
-
-    return 1;
-}
-
-void init() {
-    ios_base::sync_with_stdio(false);
-    cin.tie(0);
-    cout.tie(0);
+    return cnt;
 }
 
 int main() {
-    init();
-    cin >> n >> m;
+    ios_base::sync_with_stdio(false);
+    cin.tie(0);
 
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < m; j++) {
-            cin >> arr[i][j];
+    cin >> N >> M;
 
-            if (arr[i][j] == 2) {
-                vec.push_back(make_pair(i, j));
-            }
+    vector<Node> empty_area;    // 새로운 벽을 세워야하는 공간
 
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < M; j++) {
+            cin >> map[i][j];
+
+            if (map[i][j] == EMPTY) empty_area.push_back({i, j});
         }
     }
 
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < m; j++) {
-            if (arr[i][j] == 0) {
-                arr[i][j] = 1;
-                wall(1);
-                arr[i][j] = 0;
+    vector<int> check(empty_area.size() - 3, 0);
+    for (int i = 0; i < 3; i++) {
+        check.push_back(1);
+    }
+
+    do {
+        memcpy(tmp_map, map, sizeof(tmp_map));
+
+        // 세 군데에 벽 세우기
+        for (int i = 0; i < check.size(); i++) {
+            if (check[i] == 1) {
+                Node node = empty_area[i];
+                tmp_map[node.x][node.y] = WALL;
             }
         }
-    }
+
+        // 방문 초기화
+        memset(visit, false, sizeof(visit));
+
+        // 바이러스 전염
+        for (int i = 0; i < N; i++) {
+            for (int j = 0; j < M; j++) {
+                if (tmp_map[i][j] == VIRUS && !visit[i][j]) {
+                    checkVirus(i, j);
+                }
+            }
+        }
     
-    cout << answer << endl;
+        answer = max(answer, checkSafetyArea());
+        
+    } while (next_permutation(check.begin(), check.end()));
+
+    cout << answer;   
 
     return 0;
 }
