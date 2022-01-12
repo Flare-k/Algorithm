@@ -1,100 +1,92 @@
 #include <iostream>
+#include <algorithm>
 #include <vector>
-#include <cstring>
-
 using namespace std;
 
-void init() {
-    ios_base::sync_with_stdio(false);
-    cin.tie(NULL);
-    cout.tie(NULL);
-}
+const int MAX = 101;
+int roads[MAX][MAX];
+int N, L;
+int cnt;
 
-int check(int n, int L, vector<vector<int>>& map) {
-    int cnt = 0;
+bool validRoad(vector<int>& r) {
+    int num = r.front();
+    bool stop = false;
 
-    for (int i = 0; i < n; i++) {
-        int firstValue = map[i][0];
-        bool stop = false;
-
-        for (int j = 1; j < n; j++) {
-            if (firstValue == map[i][j]) continue;
-            
-            // 현재보다 다음 높이가 하나 낮을 때
-            else if (firstValue == map[i][j] + 1) {
-                firstValue--;
-
-                for (int k = j; k < j + L; k++) {
-                    if (k >= n) {        // 범위를 넘는 경우
-                        stop = true;
-                        break;
-                    }
-                    if (firstValue != map[i][k]) {  // 둘의 차이가 1 보다 클 때
-                        stop = true;
-                        break;
-                    }
-                    
-                    map[i][k] += 1;
-                }
-
-                if (stop) {
+    for (int i = 1; i < N; i++) {
+        if (num == r[i]) continue;
+        else if (num == r[i] + 1) { // 내리막 경사로
+            num--;
+            for (int j = i; j < i + L; j++) {
+                if (j >= N || num != r[j]) {
+                    stop = true;
                     break;
                 }
-                else {
-                    j += (L - 1);
-                }
+
+                r[j]++;
             }
-            // 현재보다 다음 높이가 하나 높을 때
-            else if (firstValue == map[i][j] - 1) {
-                firstValue++;
 
-                for (int k = j - 1; k > j - L - 1; k--) {
-                    if (k < 0) {        // 범위를 넘는 경우
-                        stop = true;
-                        break;
-                    }
-                    if (firstValue != map[i][k] + 1) {  // 둘의 차이가 1보다 크다는 의미
-                        stop = true;
-                        break;
-                    }
-
-                    map[i][k] -=  1;
+            if (stop) break;
+            else i += (L - 1);
+        }
+        else if (num == r[i] - 1) { // 오르막 경사로
+            num++;
+            for (int j = i - 1; j > i - L - 1; j--) {
+                if (j < 0 || num != r[j] + 1) {
+                    stop = true;
+                    break;
                 }
 
-                if (stop) break;
-            }
-            // 하나 초과로 높거나 낮을 때.. 이땐 경사로를 놓아도 의미가 없으므로 바로 빠져나와야 함
-            else {
-                stop = true;
-                break;
+                r[j]--; // 중복 사용을 막기 위해 아예 차이를 늘린다.
             }
         }
-
-        if (!stop) cnt++;
+        else {
+            stop = true;
+            break;
+        }
     }
 
-    return cnt;
+    return !stop;
+}
+
+void run() {
+    vector<int> tmp;
+    
+    for (int i = 0; i < N; i++) {
+        // 가로 ----------------------------
+        tmp.clear();
+
+        for (int j = 0; j < N; j++) {
+            tmp.push_back(roads[i][j]);
+        }
+
+        if (validRoad(tmp) == true) cnt++;
+
+        // 세로 ----------------------------
+        tmp.clear();
+
+        for (int j = 0; j < N; j++) {
+            tmp.push_back(roads[j][i]);
+        }
+
+        if (validRoad(tmp) == true) cnt++;
+    }
+
+    cout << cnt;
 }
 
 int main() {
-    init();
+    ios_base::sync_with_stdio(false);
+    cin.tie(0);
 
-    int n, L;
-    cin >> n >> L;
+    cin >> N >> L;
 
-    vector<vector<int>> map(n, vector<int>(n, 0));
-    vector<vector<int>> mapTranspose(n, vector<int>(n, 0));
-
-    int height;
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < n; j++) {
-            cin >> height;
-            map[i][j] += height;    // 행에 대한 행렬
-            mapTranspose[j][i] += height;   // 열에 대한 행렬
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < N; j++) {
+            cin >> roads[i][j];
         }
     }
 
-    cout << check(n, L, map) + check(n, L, mapTranspose);
+    run();
 
     return 0;
 }
