@@ -1,177 +1,99 @@
-#include <algorithm>
-#include <cmath>
-#include <cstring>
-#include <iomanip>
 #include <iostream>
-#include <sstream>
+#include <algorithm>
 #include <string>
-#include <utility>
+#include <cstring>
+#include <cmath>
 #include <vector>
-#define erdl "\n"
+#include <deque>
 using namespace std;
-vector<int> wheel[4];
-vector<pair<int, int> > cmd;
+/*  
+    각 톱니바퀴 끼리 마주보는 톱니의 극이 다르면 회전
+    N극: 0, S극: 1
+    시계: 1, 반시계: -1 
+*/
+const int MAX = 5;
+deque<int> dq[MAX];
+bool visit[MAX];
+struct Node {
+    int idx, dir;
+};
+vector<Node> arr;
 
-void orthodromic(int n, int d) {  // 정방향
-    if (d == 1) {                  // 시계방향
-        int tmp = wheel[n][7];
-        for (int i = 7; i > 0; i--) {
-            wheel[n][i] = wheel[n][i - 1];
-        }
-        wheel[n][0] = tmp;
-    } 
-    else if (d == -1) {  // 반시계방향
-        int tmp = wheel[n][0];
-        for (int i = 0; i < 7; i++) {
-            wheel[n][i] = wheel[n][i + 1];
-        }
-        wheel[n][7] = tmp;
-    }
+bool cmp(Node& a, Node& b) {
+    if (a.idx < b.idx) return true;
+    return false;
 }
 
-int reverseTurn(int d) {
-    if (d == 1)
-        return -1;
-    else
-        return 1;
+void clockwise(int i) {
+    int num = dq[i].back();
+    dq[i].pop_back();
+    dq[i].push_front(num);
 }
 
-void turnwheel(int n, int d) {
-    int rd = reverseTurn(d);
-    // 만약 1번 톱니가 돌면 2,4는 반시계, 3은 1번과 같은 방향으로
-    /*
-    1번 톱니
-    1. 1번의 2와 2번의 6의 같지 않으면 돈다
-    1-1. 2번의 2와 3번의 6의 같지 않으면 돈다
-    1-2. 3번의 2와 4번의 6의 같지 않으면 돈다
-    중간에 만약 같다면? n+1번 톱니는 돌지않는다.
+void counterclockwise(int i) {
+    int num = dq[i].front();
+    dq[i].pop_front();
+    dq[i].push_back(num);
+}
 
-    2번 톱니
-    1. 만약 1번톱니와 맞닿은 부분이 같지 않다면 1번은 2번의 반대방향으로 회전
-    */
-    if (n == 0) {
-        if (wheel[n][2] != wheel[n + 1][6]) {
-            if (wheel[n + 1][2] != wheel[n + 2][6]) {
-                if (wheel[n + 2][2] != wheel[n + 3][6]) {
-                    orthodromic(n, d);
-                    orthodromic(n + 1, rd);
-                    orthodromic(n + 2, d);
-                    orthodromic(n + 3, rd);
-                } 
-                else {
-                    orthodromic(n, d);
-                    orthodromic(n + 1, rd);
-                    orthodromic(n + 2, d);
-                }
-            } 
-            else {
-                orthodromic(n, d);
-                orthodromic(n + 1, rd);
-            }
-        } 
-        else {
-            orthodromic(n, d);
-        }
-    } 
-    else if (n == 1) {
-        if (wheel[n][6] != wheel[n - 1][2]) {
-            orthodromic(n - 1, rd);
-        }
-        if (wheel[n][2] != wheel[n + 1][6]) {
-            if (wheel[n + 1][2] != wheel[n + 2][6]) {
-                orthodromic(n, d);
-                orthodromic(n + 1, rd);
-                orthodromic(n + 2, d);
-            }
-            else {
-                orthodromic(n, d);
-                orthodromic(n + 1, rd);
-            }
-        }
-        else {
-            orthodromic(n, d);
-        }
+void findRotateVec(int i, int dir) {
+    visit[i] = true;
+    arr.push_back({i, dir});
+
+    int left = 6, right = 2;
+
+    if (i > 1 && i < 4) {
+        if (dq[i][left] != dq[i - 1][right] && !visit[i - 1]) findRotateVec(i - 1, -dir);
+        if (dq[i][right] != dq[i + 1][left] && !visit[i + 1]) findRotateVec(i + 1, -dir);
     }
-    else if (n == 2) {
-        if (wheel[n][2] != wheel[n + 1][6]) {
-            orthodromic(n + 1, rd);
-        }
-        if (wheel[n][6] != wheel[n - 1][2]) {
-            if (wheel[n - 1][6] != wheel[n - 2][2]) {
-                orthodromic(n, d);
-                orthodromic(n - 1, rd);
-                orthodromic(n - 2, d);
-            }
-            else {
-                orthodromic(n, d);
-                orthodromic(n - 1, rd);
-            }
-        }
-        else {
-            orthodromic(n, d);
-        }
-    }
-    else if (n == 3) {
-        if (wheel[n][6] != wheel[n - 1][2]) {
-            if (wheel[n - 1][6] != wheel[n - 2][2]) {
-                if (wheel[n - 2][6] != wheel[n - 3][2]) {
-                    orthodromic(n, d);
-                    orthodromic(n - 1, rd);
-                    orthodromic(n - 2, d);
-                    orthodromic(n - 3, rd);
-                }
-                else {
-                    orthodromic(n, d);
-                    orthodromic(n - 1, rd);
-                    orthodromic(n - 2, d);
-                }
-            }
-            else {
-                orthodromic(n, d);
-                orthodromic(n - 1, rd);
-            }
-        }
-        else {
-            orthodromic(n, d);
-        }
-    }
+    else if (i == 1) if (dq[i][right] != dq[i + 1][left] && !visit[i + 1]) findRotateVec(i + 1, -dir);
+    else if (i == 4) if (dq[i][left] != dq[i - 1][right] && !visit[i - 1]) findRotateVec(i - 1, -dir);
 }
 
 int main() {
     ios_base::sync_with_stdio(false);
     cin.tie(0);
-    cout.tie(0);
 
-    string ns;
-    for (int i = 0; i < 4; i++) {
-        cin >> ns;
-        for (int j = 0; j < ns.length(); j++) {
-            wheel[i].push_back(ns[j] - '0');
+    string t;
+
+    for (int i = 1; i <= 4; i++) {
+        cin >> t;
+
+        for (char idx : t) {
+            dq[i].push_back(idx - '0');
         }
     }
 
-    int n;
-    cin >> n;
-    for (int i = 0; i < n; i++) {
-        int w, d;
-        cin >> w >> d;
-        cmd.push_back(make_pair(w - 1, d));  // 인덱스이므로 1 빼줌
+    int K;
+    cin >> K;
+
+    while (K--) {
+        memset(visit, false, sizeof(visit));
+        arr.clear();
+
+        int idx, dir;
+        cin >> idx >> dir;
+
+        findRotateVec(idx, dir);
+        
+        sort(arr.begin(), arr.end(), cmp);
+
+        for (int i = 0; i < arr.size(); i++) {
+            if (arr[i].dir == 1) clockwise(arr[i].idx);
+            else counterclockwise(arr[i].idx);
+        }
     }
 
-    for (int i = 0; i < cmd.size(); i++) {
-        int n = cmd[i].first;
-        int d = cmd[i].second;
-        turnwheel(n, d);
+    // 네 톱니바퀴의 점수 합
+    int answer = 0;
+    for (int i = 1; i <= 4; i++) {
+        if (dq[i].front() == 0) continue;
+        else {
+            answer += pow(2, i - 1);
+        }
     }
 
-    int ans = 0;
-    
-    if (wheel[0][0] == 1) ans += 1;
-    if (wheel[1][0] == 1) ans += 2;
-    if (wheel[2][0] == 1) ans += 4;
-    if (wheel[3][0] == 1) ans += 8;
-
-    cout << ans << endl;
+    cout << answer;
 
     return 0;
 }
