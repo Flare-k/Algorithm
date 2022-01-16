@@ -20,10 +20,8 @@ int solution(vector<int> d, int budget) {
 
     for (int i = 0; i < d.size(); i++) {
         sum += d[i];
-        if (sum <= budget)
-            answer++;
-        else
-            break;
+        if (sum <= budget) answer++;
+        else break;
     }
 
     return answer;
