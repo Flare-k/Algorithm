@@ -1,49 +1,57 @@
 #include <iostream>
+#include <algorithm>
 #include <vector>
 using namespace std;
 
-// 우 상 좌 하
-int dy[4] = {0, -1, 0, 1};
-int dx[4] = {1, 0, -1, 0};
+/*
+0 = 0
+1 = 01
+2 = 0121
+3 = 01212320
+...
+*/
+
+int dx[4] = {0, -1, 0, 1};
+int dy[4] = {1, 0, -1, 0};
 const int MAX = 101;
-
-vector<int> dragon_dir;
+int N, x, y, d, g;
+vector<int> dirs;
 int map[MAX][MAX];
-int n, x, y, dir, gen;
 
-void drawDragonCurve() {
-    int size = dragon_dir.size();
+void dragonCurve() {
+    int size = dirs.size() - 1;
 
-    for (int i = size - 1; i >= 0; i--) {
-        int nDir = (dragon_dir[i] + 1) % 4;
+    for (int i = size; i >= 0; i--) {
+        int dir = (dirs[i] + 1) % 4;
 
-        y += dy[nDir];
-        x += dx[nDir];
-        map[y][x] = 1;
-        dragon_dir.push_back(nDir);
+        x += dx[dir];
+        y += dy[dir];
+        map[x][y] = 1;
+        dirs.push_back(dir);
     }
+
 }
 
 int main() {
     ios_base::sync_with_stdio(false);
-    cin.tie(NULL);
-    cout.tie(NULL);
+    cin.tie(0);
 
-    cin >> n;
+    cin >> N;
 
-    while (n--) {
-        cin >> x >> y >> dir >> gen;
-        dragon_dir.clear();
+    while (N--) {
+        cin >> x >> y >> d >> g;
+        dirs.clear();
+        swap(x, y);
 
-        map[y][x] = 1;
-        x += dx[dir];
-        y += dy[dir];
-        map[y][x] = 1;
+        map[x][y] = 1;
+        x += dx[d];
+        y += dy[d];
+        map[x][y] = 1;
 
-        dragon_dir.push_back(dir);
+        dirs.push_back(d);
 
-        while (gen--) {
-            drawDragonCurve();
+        while (g--) {
+            dragonCurve();
         }
     }
 
@@ -52,13 +60,11 @@ int main() {
     // 모든 꼭짓점
     for (int i = 0; i < MAX; i++) {
         for (int j = 0; j < MAX; j++) {
-            if (map[i][j] == 1 && map[i][j + 1] == 1 && map[i + 1][j] == 1 && map[i + 1][j + 1] == 1)
-                cnt++;
+            if (map[i][j] == 1 && map[i][j + 1] == 1 && map[i + 1][j] == 1 && map[i + 1][j + 1] == 1) cnt++;
         }
     }
 
     cout << cnt;
-
 
     return 0;
 }
