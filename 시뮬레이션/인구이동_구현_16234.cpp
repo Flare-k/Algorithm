@@ -1,17 +1,15 @@
 #include <iostream>
 #include <algorithm>
-#include <cstring>
 #include <vector>
-#include <cmath>
+#include <queue>
+#include <cstring>
 using namespace std;
 
+const int dx[4] = {-1, 1, 0, 0};
+const int dy[4] = {0, 0, -1, 1};
 const int MAX = 51;
-const int dx[] = {-1, 1, 0, 0};
-const int dy[] = {0, 0, -1, 1};
-
 int N, L, R;
-int sum, cnt, days;
-
+int map[MAX][MAX];
 int arr[MAX][MAX];
 bool visit[MAX][MAX];
 
@@ -19,22 +17,63 @@ struct Node {
     int x, y;
 };
 
-vector<Node> v;
+vector<Node> line[MAX * MAX + 1];
 
-void run(int x, int y) {
-    for (int i = 0; i < 4; i++) {
-        int nx = x + dx[i];
-        int ny = y + dy[i];
+void initLine() {
+    for (int i = 1; i <= N * N; i++) {
+        line[i].clear();
+    }
+}
 
-        int num = abs(arr[x][y] - arr[nx][ny]);
+int nationalLine(int x, int y, int num) {
+    queue<Node> q;
+    q.push({x, y});
+    visit[x][y] = true;
+    line[num].push_back({x, y});
 
-        if (nx < 0 || ny < 0 || nx >= N || ny >= N) continue;
-        if (L <= num && num <= R && !visit[nx][ny]) {
+    int cnt = 0;
+
+    while (!q.empty()) {
+        Node now = q.front();
+        q.pop();
+
+        for (int i = 0; i < 4; i++) {
+            int nx = now.x + dx[i];
+            int ny = now.y + dy[i];
+
+            if (nx < 0 || nx >= N || ny < 0 || ny >= N) continue;
+            if (visit[nx][ny]) continue;
+
+            int sub = abs(map[now.x][now.y] - map[nx][ny]);
+
+            if (sub < L || sub > R) continue;
+
             visit[nx][ny] = true;
-            v.push_back({nx, ny});
-            sum += arr[nx][ny];
+            q.push({nx, ny});
+            line[num].push_back({nx, ny});
             cnt++;
-            run(nx, ny);
+        }
+    }
+
+    return cnt;
+}
+
+void movePeople() {
+    for (int i = 1; i <= N * N; i++) {
+        int size = line[i].size();
+        
+        if (size > 1) {
+            int sum = 0;
+
+            for (int j = 0; j < size; j++) {
+                sum += map[line[i][j].x][line[i][j].y];
+            }
+            
+            int avg = sum / size;
+
+            for (int j = 0; j < size; j++) {
+                map[line[i][j].x][line[i][j].y] = avg;
+            }
         }
     }
 }
@@ -45,43 +84,38 @@ int main() {
 
     cin >> N >> L >> R;
 
+    int idx = 1;
     for (int i = 0; i < N; i++) {
         for (int j = 0; j < N; j++) {
-            cin >> arr[i][j];
+            cin >> map[i][j];
+            arr[i][j] = idx++;
         }
     }
 
+    int day = 0;
+    
     while (1) {
+        initLine();
         memset(visit, false, sizeof(visit));
-        bool flag = false;
-     
+
+        int cnt = 0;
+
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < N; j++) {
-                if (visit[i][j]) continue;
-
-                visit[i][j] = true;
-                sum = arr[i][j];
-                cnt = 1;
-
-                v.clear();
-                v.push_back({i, j});
-                run(i, j);
-
-                if (cnt >= 2) {
-                    for (auto idx : v) {
-                        arr[idx.x][idx.y] = sum / cnt;
-                    }
-
-                    flag = true;
+                if (!visit[i][j]) {
+                    cnt += nationalLine(i, j, arr[i][j]);
                 }
             }
         }
 
-        if (flag) days++;
-        else break;
+        if (cnt == 0) break;
+
+        movePeople();
+
+        day++;
     }
 
-    cout << days;
+    cout << day;
 
     return 0;
 }
