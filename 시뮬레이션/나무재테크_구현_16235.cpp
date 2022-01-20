@@ -1,7 +1,6 @@
 #include <iostream>
 #include <cstring>
 #include <vector>
-#include <deque>
 #include <algorithm>
 using namespace std;
 
@@ -20,16 +19,14 @@ void spring() {
 
     for (int r = 1; r <= N; r++) {
         for (int c = 1; c <= N; c++) {
-            if (tree[r][c].size() > 0) {
-                tmp.clear();
-
+            int size = tree[r][c].size();
+            
+            if (size > 0) {
                 sort(tree[r][c].begin(), tree[r][c].end());
+                tmp.clear();
                 
-                int size = tree[r][c].size();
-
                 for (int i = 0; i < size; i++) {
                     int age = tree[r][c][i];
-                    
                     if (age == 0) continue;
 
                     if (map[r][c] - age >= 0) {
@@ -62,8 +59,8 @@ void summer() {
 void fall() {
     for (int r = 1; r <= N; r++) {
         for (int c = 1; c <= N; c++) {
-            if (tree[r][c].size() > 0) {
-                int size = tree[r][c].size();
+            int size = tree[r][c].size();
+            if (size > 0) {
 
                 for (int i = 0; i < size; i++) {
                     int age = tree[r][c][i];
