@@ -1,129 +1,132 @@
-#include <algorithm>
 #include <iostream>
 #include <cstring>
-#include <queue>
-#include <utility>
 using namespace std;
 
+const int dx[4] = {-1, 1, 0, 0};
+const int dy[4] = {0, 0, -1, 1};
 const int MAX = 51;
-const int dx[4] = {0, 0, -1, 1};
-const int dy[4] = {-1, 1, 0, 0};
-int room[MAX][MAX]; // 방의 정보
-int roomTmp[MAX][MAX];  // 임시 방의 정보
-queue<pair<int, int>> q;
+int R, C, T;
+int map[MAX][MAX];
+int tmp[MAX][MAX];
+bool visit[MAX][MAX];
 
-void runFresher(int r, int c){
-    int first = 0; //위쪽 공기청정기
-    for (int i = 0 ; i < r; i++){
-        if (room[i][0] == -1){
-            first = i;
-            break;
-        }
-    }
-    for (int i = first - 1; i >= 1; i--){
-        room[i][0] = room[i - 1][0];
-    }
-    for (int i = 0; i < c - 1; i++){
-        room[0][i] = room[0][i + 1];
-    }
-    for (int i = 0; i < first; i++){
-        room[i][c - 1] = room[i + 1][c - 1];
-    }
-    for (int i = c - 1; i >= 2; i--){
-        room[first][i] = room[first][i - 1];
-    }
-    room[first][1] = 0;
-    
-    //아래쪽 공기청정기
-    int second = first + 1;  
-    for (int i = second + 1; i < r - 1; i++) {
-        room[i][0] = room[i + 1][0];
-    }
-    for (int i = 0; i < c - 1; i++) {
-        room[r - 1][i] = room[r - 1][i + 1];
-    }
-    for (int i = r - 1; i >= second + 1; i--) {
-        room[i][c - 1] = room[i - 1][c - 1];
-    }
-    for (int i = c - 1; i >= 2; i--) {
-        room[second][i] = room[second][i - 1];
-    }
-    room[second][1] = 0;
-}
+struct Dir {
+    int x, y;
+};
 
-void BFS(int r, int c){
-    while(!q.empty()){
-        int x = q.front().first;
-        int y = q.front().second;
-        int res = room[x][y] / 5;
-        
-        q.pop();
+Dir cleaner1, cleaner2;
 
-        if (res == 0) continue;
+void diffuseFineDust() {
+    memset(tmp, 0, sizeof(tmp));
+    tmp[cleaner1.x][cleaner1.y] = -1;
+    tmp[cleaner2.x][cleaner2.y] = -1;
 
-        for (int i = 0; i < 4; i++){
-            int nx = x + dx[i];
-            int ny = y + dy[i];
+    for (int x = 1; x <= R; x++) {
+        for (int y = 1; y <= C; y++) {
+            if (map[x][y] > 0) {
+                int cnt = 0;
+                int amount = (map[x][y] / 5);
 
-            if (0 <= nx && nx < r && 0 <= ny && ny < c && room[nx][ny] != -1) {
-                roomTmp[nx][ny] += res;
-                room[x][y] -= res;
+                for (int d = 0; d < 4; d++) {
+                    int nx = x + dx[d];
+                    int ny = y + dy[d];
+
+                    if (nx < 1 || nx > R || ny < 1 || ny > C) continue;
+                    if (map[nx][ny] == -1) continue;
+
+                    cnt++;
+                    tmp[nx][ny] += amount;
+                }
+
+                tmp[x][y] += (map[x][y] - amount * cnt);
             }
         }
-
     }
 
-    for (int i = 0; i < r; i++) {
-       for (int j = 0; j < c; j++) {
-          room[i][j] += roomTmp[i][j];
-       }
+    memcpy(map, tmp, sizeof(map));
+}
+
+void runAirCleaner() {
+    // cleaner 1
+    int x = cleaner1.x;
+    int y = cleaner1.y;
+    
+    for (int i = x - 1; i > 1; i--) {
+        map[i][1] = map[i - 1][1];
     }
     
-    // 공기청정기 ON!
-    runFresher(r, c);
-    
-    for (int i = 0; i < r; i++) {
-       for (int j = 0; j < c; j++) {
-          if (room[i][j] != 0 && room[i][j] != -1) {
-             q.push({i, j});
-          }
-       }
+    for (int j = 1; j < C; j++) {
+        map[1][j] = map[1][j + 1];
     }
 
-    memset(roomTmp, 0, sizeof(roomTmp));
+    for (int i = 1; i < x; i++) {
+        map[i][C] = map[i + 1][C];
+    }
 
+    for (int j = C; j > 2; j--) {
+        map[x][j] = map[x][j - 1];
+    }
+    
+    map[x][2] = 0;
+
+    // cleaner 2
+    x = cleaner2.x;
+    y = cleaner2.y;
+
+    for (int i = x + 1; i < R; i++) {
+        map[i][1] = map[i + 1][1];
+    }
+
+    for (int j = 1; j < C; j++) {
+        map[R][j] = map[R][j + 1];
+    }
+
+    for (int i = R; i > x; i--) {
+        map[i][C] = map[i - 1][C];
+    }
+
+    for (int j = C; j > 2; j--) {
+        map[x][j] = map[x][j - 1];
+    }
+
+    map[x][2] = 0;
+}
+
+int amountOfFineDust() {
+    int sum = 0;
+    for (int i = 1; i <= R; i++) {
+        for (int j = 1; j <= C; j++) {
+            if (map[i][j] != -1) sum += map[i][j];
+        }
+    }
+
+    return sum;
 }
 
 int main() {
     ios_base::sync_with_stdio(false);
-    cin.tie(NULL);
-    cout.tie(NULL);
-    int r, c, t;
-    cin >> r >> c >> t;
-    
-    for (int i = 0; i < r; i++){
-       for (int j = 0; j < c; j++) {
-           cin >> room[i][j];
-           roomTmp[i][j] = 0;
+    cin.tie(0);
 
-           if (room[i][j] != 0 && room[i][j] != -1) {
-              q.push({i, j});
-           }
+    cin >> R >> C >> T;
 
-       }
+    int cnt = 0;
+    for (int x = 1; x <= R; x++) {
+        for (int y = 1; y <= C; y++) {
+            cin >> map[x][y];
+            if (map[x][y] == -1 && cnt == 0) {
+                cleaner1 = {x, y};
+                cnt++;
+            }
+            else if (map[x][y] == -1 && cnt == 1) cleaner2 = {x, y};
+        }
     }
 
-    while (t--){
-        BFS(r, c);  // 미세먼지 확산 & 공기청정기 T번
+    while (T--) {
+        diffuseFineDust();
+        runAirCleaner();
     }
 
-    int ans = 0;
-    for (int i = 0; i < r; i++) {
-       for (int j = 0; j < c; j++) {
-          ans += room[i][j];
-       }
-    }
-    cout << ans + 2 << '\n';    // 공기청정기 -1 두번을 상쇄시키기 위해 +2
+    cout << amountOfFineDust();
 
     return 0;
 }
