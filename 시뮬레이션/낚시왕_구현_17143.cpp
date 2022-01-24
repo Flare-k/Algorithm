@@ -1,66 +1,62 @@
 #include <iostream>
-#include <vector>
-#include <cstring>
 #include <algorithm>
+#include <cstring>
+#define MAX 101
 using namespace std;
 
-struct Shark {
-    int x, y, speed, dir, size;
-};
-
-const int MAX = 101;
 const int dx[] = {0, -1, 1, 0, 0};
 const int dy[] = {0, 0, 0, 1, -1};
 int R, C, M;
-Shark arr[MAX][MAX];
-Shark tmp[MAX][MAX];
-bool used[MAX][MAX];
+struct Node {
+    int speed, dir, size;
+};
+Node map[MAX][MAX];
+Node cpy[MAX][MAX];
 
-void moveShark() {
-    memset(tmp, {}, sizeof(tmp));
-
+int fishing(int idx) {
+    int size = 0;
     for (int i = 1; i <= R; i++) {
-        for (int j = 1; j <= C; j++) {
-            if (i == 2 && j == 4) {
-                int sum = 1;
-            }
-            if (used[i][j]) {
-                Shark now = arr[i][j];
-                arr[i][j] = {};
-                
-                int d = now.dir;
-                int s = now.speed;
+        if (map[i][idx].size > 0) {
+            size += map[i][idx].size;
+            map[i][idx] = {0, 0, 0};
+            break;
+        }
+    }
 
-                int nx = now.x;
-                int ny = now.y;
+    return size;
+}
 
-                for (int k = 0; k < s; k++) {
-                    if (nx + dx[d] < 1 || ny + dy[d] < 1 || nx + dx[d] > R || ny + dy[d] > C) {
-                        d = d > 2 ? 7 - d : 3 - d;
+void moving() {
+    memset(cpy, {}, sizeof(cpy));
+
+    for (int x = 1; x <= R; x++) {
+        for (int y = 1; y <= C; y++) {
+            if (map[x][y].size > 0) {
+
+                int speed = map[x][y].speed;
+                int dir = map[x][y].dir;
+                int size = map[x][y].size;
+                int nx = x;
+                int ny = y;
+
+                while (speed--) {
+                    nx += dx[dir];
+                    ny += dy[dir];
+
+                    if (nx < 1 || nx > R || ny < 1 || ny > C) {
+                        speed++;
+                        nx -= dx[dir];
+                        ny -= dy[dir];
+                        dir = dir >= 3 ? 7 - dir : 3 - dir;
                     }
-
-                    nx += dx[d];
-                    ny += dy[d];
                 }
 
-                now = {nx, ny, s, d, now.size};
-
-                tmp[nx][ny] = now.size > tmp[nx][ny].size ? now : tmp[nx][ny];
-                used[i][j] = false;
+                if (size > cpy[nx][ny].size) cpy[nx][ny] = {map[x][y].speed, dir, size};
             }
         }
     }
 
-    memset(used, false, sizeof(used));
-
-    for (int i = 1; i <= R; i++) {
-        for (int j = 1; j <= C; j++) {
-            if (tmp[i][j].size > 0) {
-                used[i][j] = true;
-                arr[i][j] = tmp[i][j];
-            }
-        }
-    }
+    memcpy(map, cpy, sizeof(map));
 }
 
 int main() {
@@ -69,35 +65,24 @@ int main() {
 
     cin >> R >> C >> M;
 
-    for (int i = 0; i < M; i++) {
-        int r, c, s, d, z;
-        cin >> r >> c >> s >> d >> z;
-        
-        // 불필요한 왕복 제거 (중요)
-        if (d <= 2) s %= (R - 1) * 2;
-        else s %= (C - 1) * 2;
-
-        arr[r][c] = {r, c, s, d, z};
-        used[r][c] = true;
-    }
-
+    int x, y, speed, dir, size;
     int answer = 0;
-    // 낚시꾼이 한칸씩 이동
 
     if (M > 0) {
-        for (int j = 1; j <= C; j++) {
-            // j열에서 땅에서 가까운 상어 제거
-            for (int i = 1; i <= R; i++) {
-                if (used[i][j]) {
-                    answer += arr[i][j].size;
-                    arr[i][j] = {};
-                    used[i][j] = false;
-                    break;
-                }
-            }
+        for (int i = 0; i < M; i++) {
+            cin >> x >> y >> speed >> dir >> size;
 
-            // 상어 이동
-            moveShark();
+            // ********* 불필요한 왕복 제거 (중요) *********
+            if (dir <= 2) speed %= (R - 1) * 2;
+            else speed %= (C - 1) * 2;
+            
+            map[x][y] = {speed, dir, size};
+        }
+
+
+        for (int i = 1; i <= C; i++) {
+            answer += fishing(i);
+            moving();
         }
     }
 
