@@ -3,38 +3,32 @@
 #include <cstring>
 #include <vector>
 #include <map>
+#define MAX 101
 using namespace std;
-
-const int MAX = 101;
-
-struct Node {
-    int num, cnt;
-};
 
 int arr[MAX][MAX];
 int tmp[MAX][MAX];
 int r, c, k;
+struct Node {
+    int num, cnt;
+};
 
-vector<Node> tmpNode;
 map<int, int> m;
-map<int, int>::iterator iter;
+vector<Node> v;
 
-bool cmp(Node& a, Node& b) {
-    if (a.cnt < b.cnt) return true;
-    else if (a.cnt > b.cnt) return false;
-    return a.num <= b.num;
+bool cmp(Node& A, Node& B) {
+    if (A.cnt < B.cnt) return true;
+    else if (A.cnt == B.cnt) return A.num < B.num;
+    return false;
 }
 
 void convertArr(int& row, int& col) {
-
     memset(tmp, 0, sizeof(tmp));
 
-    int elem = row;
-    row = col;
-    col = elem;
+    swap(row, col);
 
-    for (int i = 0; i < row; i++) {
-        for (int j = 0; j < col; j++) {
+    for (int i = 1; i <= row; i++) {
+        for (int j = 1; j <= col; j++) {
             tmp[i][j] = arr[j][i];
         }
     }
@@ -43,80 +37,70 @@ void convertArr(int& row, int& col) {
 }
 
 void run(int& row, int& col) {
+    bool convert = false;
 
-    int maxLen = -21e8;
-    bool flag = false;
-    
     if (row < col) {
         convertArr(row, col);
-        flag = true;
+        convert = true;
     }
+
+    int len = -21e8;
     
-    for (int i = 0; i < row; i++) {
+    for (int i = 1; i <= row; i++) {
         m.clear();
-        tmpNode.clear();
-        
-        for (int j = 0; j < col; j++) {
-            if (arr[i][j] > 0) m[arr[i][j]]++;
+        v.clear();
+
+        for (int j = 1; j <= col; j++) {
+            if (arr[i][j] == 0) continue;
+            m[arr[i][j]]++;
             arr[i][j] = 0;
         }
 
-        for (iter = m.begin(); iter != m.end(); iter++) {
-            tmpNode.push_back({iter->first, iter->second});
+        for (auto iter = m.begin(); iter != m.end(); iter++) {
+            v.push_back({iter->first, iter->second});
         }
 
-        sort(tmpNode.begin(), tmpNode.end(), cmp);
-
-        int c = 0;
-        for (int k = 0; k < tmpNode.size(); k++) {
-            arr[i][c++] = tmpNode[k].num;
-            arr[i][c++] = tmpNode[k].cnt;
+        sort(v.begin(), v.end(), cmp);
+        
+        int idx = 1;
+        for (int k = 0; k < v.size(); k++) {
+            arr[i][idx++] = v[k].num;
+            arr[i][idx++] = v[k].cnt;
         }
 
-        maxLen = max(maxLen, c);
+        len = max(len, idx);
     }
+
+    col = len;
+
+    if (convert) convertArr(row, col);
     
-    col = maxLen;
-
-    if (flag) convertArr(row, col);
-}
-
-void init() {
-    cin >> r >> c >> k;
-
-    memset(arr, 0, sizeof(arr));
-
-    for (int i = 0; i < 3; i++) {
-        for (int j = 0; j < 3; j++) {
-            cin >> arr[i][j];
-        }
-    }
 }
 
 int main() {
     ios_base::sync_with_stdio(false);
-    cin.tie(NULL);
-    cout.tie(NULL);
+    cin.tie(0);
 
-    init();
+    cin >> r >> c >> k;
+    
+    int row = 3, col = 3, sec = 0;
 
-    int minTime = 0;
-    int row = 3, col = 3;
-
-    while (minTime <= 100) {
-        if (arr[r - 1][c - 1] == k) break;
-
+    for (int i = 1; i <= row; i++) {
+        for (int j = 1; j <= col; j++) {
+            cin >> arr[i][j];
+        }
+    }
+    
+    while (sec <= 100) {
+        if (arr[r][c] == k) break;
+        
         run(row, col);
-
-        minTime++;
+        sec++;
     }
 
-    if (minTime > 100) {
-        cout << -1;
-    }
-    else {
-        cout << minTime;
-    }
+    if (sec > 100) sec = -1;
+
+    cout << sec;
 
     return 0;
 }
