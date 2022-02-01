@@ -1,14 +1,13 @@
 #include <iostream>
 #include <algorithm>
 #include <vector>
-#include <map>
 using namespace std;
 
 const int MAX_HORSE = 4;
 const int MAX_ITER = 1000;
-const int MAX = 12;
-const int dx[] = {0, 0, -1, 1};
-const int dy[] = {1, -1, 0, 0};
+const int MAX = 13;
+const int dx[] = {0, 0, 0, -1, 1};
+const int dy[] = {0, 1, -1, 0, 0};
 
 struct Node {
     int x, y, dir;
@@ -17,7 +16,6 @@ struct Node {
 int N, K;
 vector<int> horse[MAX][MAX];
 int chess[MAX][MAX];        // 흰색, 빨간색, 파란색 확인만..
-//map<int, Node> cur;         // 현재 말의 위치
 vector<Node> cur;
 
 enum {
@@ -25,18 +23,17 @@ enum {
 };
 
 bool exitCond() {
-    for (int i = 0; i < N; i++) {
-        for (int j = 0; j < N; j++) {
+    for (int i = 1; i <= N; i++) {
+        for (int j = 1; j <= N; j++) {
             int size = horse[i][j].size();
             if (size >= MAX_HORSE) return true;
         }
     }
-
     return false;
 }
 
 bool outOfRange(int nx, int ny) {
-    if (nx < 0 || nx >= N || ny < 0 || ny >= N) return true;
+    if (nx < 1 || nx > N || ny < 1 || ny > N) return true;
     return false;
 }
 
@@ -59,16 +56,16 @@ void run() {
             int ndir = now.dir;
 
             if (chess[nx][ny] == BLUE || outOfRange(nx, ny)) {
-                ndir = now.dir < 2 ? 1 - now.dir : 5 - now.dir;
+                ndir = now.dir < 3 ? 3 - now.dir : 7 - now.dir;
                 nx = now.x + dx[ndir];
                 ny = now.y + dy[ndir];
 
                 if (chess[nx][ny] == BLUE || outOfRange(nx, ny)) {
-                    cur[h] = {now.x, now.y, ndir};
+                    cur[h].dir = ndir;
                     continue;
                 }
 
-                flag = true;    // 다음 칸이 파란칸이 아닌거나 흰칸인 경우
+                flag = true;    // 다음 칸이 파란칸이 아니거나 흰칸인 경우
             }
 
             // 특정 좌표에서 현재 말의 위치
@@ -121,20 +118,20 @@ int main() {
 
     cin >> N >> K;
 
-    for (int i = 0; i < N; i++) {
-        for (int j = 0; j < N; j++) {
+    for (int i = 1; i <= N; i++) {
+        for (int j = 1; j <= N; j++) {
             cin >> chess[i][j];
         }
     }
 
     cur.resize(K);
 
+    int x, y, dir;
     for (int num = 0; num < K; num++) {
-        int x, y, dir;
         cin >> x >> y >> dir;   // 행, 열, 방향
         
-        cur[num] = {x - 1, y - 1, dir - 1};
-        horse[x - 1][y - 1].push_back(num);
+        cur[num] = {x, y, dir};
+        horse[x][y].push_back(num);
     }
 
     run();
