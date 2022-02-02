@@ -1,145 +1,135 @@
 #include <iostream>
-#include <deque>
-#include <vector>
 #include <cstring>
+#include <vector>
+#include <deque>
+#define MAX 51
 using namespace std;
 
 int N, M, T;
-const int MAX = 51;
+deque<int> dq[MAX];
 bool visit[MAX][MAX];
 enum {
-    CLOCK, NCLOCK
+    CLOCKWISE, COUNT_CLOCKWISE
 };
 
-struct Node {
-    deque<int> dq;
-
-    void shuffle(int dir, int k) {
-        while (k--) {
-            if (dir == CLOCK) {
-                int num = dq.back();
-                dq.pop_back();
-                dq.push_front(num);
-            }
-            else if (dir == NCLOCK) {
-                int num = dq.front();
-                dq.pop_front();
-                dq.push_back(num);
-            }
-        }
-    }
-};
-
-vector<Node> v;
-
-void checkAdj() {
-    int cnt = 0;
+void clearAdjacent() {
     for (int i = 1; i <= N; i++) {
         for (int j = 0; j < M; j++) {
-            if (v[i].dq[j] == 0) continue;
-            
-            // 좌우
-            if (j > 0 && j < M - 1) {
-                if (v[i].dq[j] == v[i].dq[j - 1]) {
-                    visit[i][j] = true;
-                    visit[i][j - 1] = true;
-                    cnt++;
-                }
-                if (v[i].dq[j] == v[i].dq[j + 1]) {
-                    visit[i][j] = true;
-                    visit[i][j + 1] = true;
-                    cnt++;
-                }
-            }
-            else if (j == 0) {
-                if (v[i].dq[j] == v[i].dq[M - 1]) {
-                    visit[i][j] = true;
-                    visit[i][M - 1] = true;
-                    cnt++;
-                }
-                if (v[i].dq[j] == v[i].dq[1]) {
-                    visit[i][j] = true;
-                    visit[i][1] = true;
-                    cnt++;
-                }
-            }
-            else if (j == M - 1) {
-                if (v[i].dq[j] == v[i].dq[j - 1]) {
-                    visit[i][j] = true;
-                    visit[i][j - 1] = true;
-                    cnt++;
-                }
-                if (v[i].dq[j] == v[i].dq[0]) {
-                    visit[i][j] = true;
-                    visit[i][0] = true;
-                    cnt++;
-                }
-            }
-
-            // 다음 원판
-            if (i > 1 && i < N) {
-                if (v[i].dq[j] == v[i - 1].dq[j]) {
-                    visit[i][j] = true;
-                    visit[i - 1][j] = true;
-                    cnt++;
-                }
-                if (v[i].dq[j] == v[i + 1].dq[j]) {
-                    visit[i][j] = true;
-                    visit[i + 1][j] = true;
-                    cnt++;
-                }
-            }
-            else if (i == 1) {
-                if (v[i].dq[j] == v[2].dq[j]) {
-                    visit[i][j] = true;
-                    visit[2][j] = true;
-                    cnt++;
-                }
-            }
-            else if (i == N) {
-                if (v[i].dq[j] == v[N - 1].dq[j]) {
-                    visit[i][j] = true;
-                    visit[N - 1][j] = true;
-                    cnt++;
-                }
-            }
+            if (visit[i][j]) dq[i][j] = 0;
         }
     }
+}
 
-    if (cnt == 0) {
-        int sum = 0, t = 0;
-
-        for (int i = 1; i <= N; i++) {
-            for (int j = 0; j < M; j++) {
-                if (v[i].dq[j] != 0) {
-                    sum += v[i].dq[j];
-                    t++;
-                }
+void rotate(int x, int d, int k) {
+    for (int i = x; i <= N; i += x) {
+        if (d == CLOCKWISE) {
+            for (int j = 0; j < k; j++) {
+                int num = dq[i].back();
+                dq[i].pop_back();
+                dq[i].push_front(num);
             }
         }
-
-        double avg = double(sum) / double(t);
-
-        for (int i = 1; i <= N; i++) {
-            for (int j = 0; j < M; j++) {
-                if (v[i].dq[j] == 0) continue;
-                
-                if (v[i].dq[j] == avg) continue;
-                else if (v[i].dq[j] > avg) v[i].dq[j]--;
-                else if (v[i].dq[j] < avg) v[i].dq[j]++;
+        else if (d == COUNT_CLOCKWISE) {
+            for (int j = 0; j < k; j++) {
+                int num = dq[i].front();
+                dq[i].pop_front();
+                dq[i].push_back(num);
             }
         }
     }
 }
 
-void clearAdj() {
+void checkAdjacent(int x, int d, int k) {
+    memset(visit, false, sizeof(visit));
+    int check = 0;
+
     for (int i = 1; i <= N; i++) {
         for (int j = 0; j < M; j++) {
-            if (visit[i][j] == true) v[i].dq[j] = 0;
+            if (dq[i][j] == 0) continue;
+
+            int l = j - 1 < 0 ? M - 1 : j - 1;
+            int r = j + 1 >= M ? 0 : j + 1;
+
+            int left = dq[i][l];
+            int num = dq[i][j];
+            int right = dq[i][r];
+
+            if (left == num) {
+                visit[i][l] = true;
+                visit[i][j] = true;
+                check++;
+            }
+
+            if (num == right) {
+                visit[i][r] = true;
+                visit[i][j] = true;
+                check++;
+            }
+            
+            if (i == 1) {
+                if (num == dq[i + 1][j]) {
+                    visit[i + 1][j] = true;
+                    visit[i][j] = true;
+                    check++;
+                }
+            }
+            else if (i > 1 && i < N) {
+                if (num == dq[i - 1][j]) {
+                    visit[i - 1][j] = true;
+                    visit[i][j] = true;
+                    check++;
+                }
+                if (num == dq[i + 1][j]) {
+                    visit[i + 1][j] = true;
+                    visit[i][j] = true;
+                    check++;
+                }
+            }
+            else if (i == N) {
+                if (num == dq[i - 1][j]) {
+                    visit[i - 1][j] = true;
+                    visit[i][j] = true;
+                    check++;
+                }
+            }
         }
     }
 
-    memset(visit, false, sizeof(visit));
+    if (check == 0) {
+        double sum = 0, cnt = 0;
+
+        for (int i = 1; i <= N; i++) {
+            for (int k = 0; k < M; k++) {
+                if (dq[i][k] != 0) {
+                    sum += dq[i][k];
+                    cnt++;
+                }
+            }
+        }
+
+        double avg = sum / cnt;
+
+        for (int i = 1; i <= N; i++) {
+            for (int k = 0; k < M; k++) {
+                if (dq[i][k] == 0) continue;
+                
+                if (dq[i][k] > avg) dq[i][k]--;
+                else if (dq[i][k] < avg) dq[i][k]++;
+            }
+        }
+    }
+    else clearAdjacent();
+}
+
+void answer() {
+    int sum = 0;
+    for (int i = 1; i <= N; i++) {
+        for (int j = 0; j < M; j++) {
+            sum += dq[i][j];
+        }
+    }
+
+    cout << sum;
 }
 
 int main() {
@@ -147,38 +137,24 @@ int main() {
     cin.tie(0);
 
     cin >> N >> M >> T;
-    v.resize(N + 1);
 
+    // 원판에 적힌 수
     int num;
     for (int i = 1; i <= N; i++) {
         for (int j = 0; j < M; j++) {
             cin >> num;
-            v[i].dq.push_back(num);
+            dq[i].push_back(num);
         }
     }
 
-    int x, d, k;
-    for (int t = 0; t < T; t++) {
-        // x의 배수인 원판을 d방향으로 k칸 회전
+    while (T--) {
+        int x, d, k;
         cin >> x >> d >> k;
-        
-        // 회전 후, 인접한 원판 확인
-        for (int i = x; i <= N; i += x) {
-            v[i].shuffle(d, k);
-        }
-
-        checkAdj();
-        clearAdj();
+        rotate(x, d, k);
+        checkAdjacent(x, d, k);
     }
 
-    int answer = 0;
-    for (int i = 1; i <= N; i++) {
-        for (int j = 0; j < M; j++) {
-            answer += v[i].dq[j];
-        }
-    }
-    
-    cout << answer;
+    answer();
 
     return 0;
 }
