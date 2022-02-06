@@ -25,23 +25,23 @@ struct Shark {
 
 int n, d, result;;
 
-void vectReset(vector<vector<Fish>>& fish, unordered_map<int, Node>& m) {
+void vectReset(vector<vector<Fish>>& map, unordered_map<int, Node>& fish) {
     for (int i = 0; i < MAX; i++) {
         for (int j = 0; j < MAX; j++) {
-            if (fish[i][j].num != 0) m[fish[i][j].num] = {i, j};
+            if (map[i][j].num != 0) fish[map[i][j].num] = {i, j};
         }
     }
 }
 
-void fishMove(vector<vector<Fish>>& fish, unordered_map<int, Node>& m, Shark& shark, int total) {
+void fishMove(vector<vector<Fish>>& map, unordered_map<int, Node>& fish, Shark& shark, int total) {
 
     result = max(result, total);
 
     for (int i = 1; i <= MAX * MAX; i++) {
-        if (m.count(i) == true && shark.num != i) {
+        if (fish.count(i) == true && shark.num != i) {
             
-            Node now = m[i];
-            int dir = fish[now.x][now.y].dir;
+            Node now = fish[i];
+            int dir = map[now.x][now.y].dir;
             int flag = 0;
 
             while (1) {
@@ -58,18 +58,18 @@ void fishMove(vector<vector<Fish>>& fish, unordered_map<int, Node>& m, Shark& sh
                 if (nx < 0 || ny < 0 || nx >= MAX || ny >= MAX) continue;
                 if (nx == shark.x && ny == shark.y) continue;
 
-                fish[now.x][now.y].dir = dir - 1;
+                map[now.x][now.y].dir = dir - 1;
                 
-                swap(fish[now.x][now.y], fish[nx][ny]);
-                swap(m[fish[now.x][now.y].num], m[fish[nx][ny].num]);
+                swap(map[now.x][now.y], map[nx][ny]);
+                swap(fish[map[now.x][now.y].num], fish[map[nx][ny].num]);
 
                 break;
             }
         }
     }
 
-    m.clear();
-    vectReset(fish, m);
+    fish.clear();
+    vectReset(map, fish);
 
     // shark
     int x = shark.x;
@@ -77,45 +77,37 @@ void fishMove(vector<vector<Fish>>& fish, unordered_map<int, Node>& m, Shark& sh
     int dir = shark.dir;
 
     for (int i = 1; i <= 3; i++) {
-        vector<vector<Fish>> tmpFish(MAX, vector<Fish>(MAX));
-        tmpFish = fish;
-    
-        unordered_map<int, Node> tmpM;
-        tmpM = m;
-        
+        vector<vector<Fish>> tmp = map;
+        unordered_map<int, Node> tmpFish = fish;
         
         int nx = x + (dx[dir] * i);
         int ny = y + (dy[dir] * i);
 
         if (nx < 0 || ny < 0 || nx >= MAX || ny >= MAX) continue;
-        if (tmpFish[nx][ny].num == 0) continue;
+        if (tmp[nx][ny].num == 0) continue;
 
-        shark.x = nx;
-        shark.y = ny;
+        int eatFish = tmp[nx][ny].num;
+        
+        shark = {nx, ny, tmp[nx][ny].num, tmp[nx][ny].dir};
+        tmp[nx][ny] = {0, 0};
 
-        int eatFish = tmpFish[nx][ny].num;
-        shark.num = tmpFish[nx][ny].num;
-        tmpFish[nx][ny].num = 0;
-        shark.dir = tmpFish[nx][ny].dir;
-        tmpFish[nx][ny].dir = 0;
-
-        fishMove(tmpFish, tmpM, shark, total + eatFish);
+        fishMove(tmp, tmpFish, shark, total + eatFish);
     }
 }
 
-void init(vector<vector<Fish>>& fish, unordered_map<int, Node>& m, Shark& shark) {
+void init(vector<vector<Fish>>& map, unordered_map<int, Node>& fish, Shark& shark) {
     for (int i = 0; i < MAX; i++) {
         for (int j = 0; j < MAX; j++) {
             cin >> n >> d;
         
             if (i == 0 && j == 0) {
                 shark = {i, j, n, d};
-                fish[i][j] = {0, 0};
+                map[i][j] = {0, 0};
                 continue;
             }
 
-            fish[i][j] = {n, d};
-            m[n] = {i, j};
+            map[i][j] = {n, d};
+            fish[n] = {i, j};
         }
     }
 }
@@ -125,12 +117,12 @@ int main() {
     cin.tie(0);
     cout.tie(0);
 
-    unordered_map<int, Node> m;
-    vector<vector<Fish>> fish(MAX, vector<Fish>(MAX));
+    unordered_map<int, Node> fish;
+    vector<vector<Fish>> map(MAX, vector<Fish>(MAX));
     Shark shark;
     
-    init(fish, m, shark);
-    fishMove(fish, m, shark, shark.num);
+    init(map, fish, shark);
+    fishMove(map, fish, shark, shark.num);
 
     cout << result;
 
