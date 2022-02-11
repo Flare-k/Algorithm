@@ -8,6 +8,7 @@ int arr[MAX][MAX];
 bool alive[MAX];
 int guilty[MAX];
 int answer;
+bool flag;
 
 void updateGuilty(int i, int num, int& idx) {
     int maxx = -21e8;
@@ -24,8 +25,11 @@ void updateGuilty(int i, int num, int& idx) {
 }
 
 void run(int cnt, int night, int max_idx) {
+    if (flag) return;
+
     if (cnt == 1 || alive[mafia]) {
         answer = max(answer, night);
+        if (cnt == 1 && alive[mafia]) flag = true;
         return;
     }
 
@@ -39,6 +43,7 @@ void run(int cnt, int night, int max_idx) {
             alive[i] = true;
             updateGuilty(i, 1, idx);
             run(cnt - 1, night + 1, idx);
+            if (flag) return;
             updateGuilty(i, -1, idx);
             alive[i] = false;
         }
@@ -47,6 +52,7 @@ void run(int cnt, int night, int max_idx) {
     else {
         alive[max_idx] = true;
         run(cnt - 1, night, max_idx);
+        if (flag) return;
         alive[max_idx] = false;
     }
 }
