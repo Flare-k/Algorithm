@@ -1,6 +1,7 @@
 #include <iostream>
 #include <algorithm>
 #include <vector>
+#include <cstring>
 using namespace std;
 
 int dx[4] = {-1, 1, 0, 0};
@@ -9,6 +10,7 @@ int N, M;
 const int MAX = 51;
 int answer = 21e8;
 int map[MAX][MAX];
+int cpy[MAX][MAX];
 
 struct Node {
     int x, y;
