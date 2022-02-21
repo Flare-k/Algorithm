@@ -72,7 +72,7 @@ void run() {
                         q.push({nx, ny + 1});
                     }
                 }
-                
+
                 if (path[number[nx][ny]] == 0) {
                     path[number[nx][ny]] = number[now.x][now.y];
                 }
@@ -125,10 +125,10 @@ int main() {
     }
 
     cout << answer.size() << '\n';
-    
+
     for (int i = answer.size() - 1; i >= 0; i--) {
         cout << answer[i] << ' ';
     }
 
     return 0;
-}
+} 
