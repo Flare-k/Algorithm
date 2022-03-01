@@ -59,7 +59,6 @@ void run() {
 
     // 만약 다 안퍼졌다면 nonelimit 증가
     if (!check()) nonelimit++;
-    
 }
 
 void init () {
