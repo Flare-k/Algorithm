@@ -26,7 +26,9 @@ void run() {
         int status = now.status;
         q.pop_front();
 
-        if (arr[now.x][now.y] == ROAD && ((now.x == 0 || now.x == R - 1) || (now.y == 0 || now.y == C - 1))) {
+        if (now.status == ROAD && arr[now.x][now.y] == FIRE) continue;
+
+        if (arr[now.x][now.y] == ROAD && (now.x == 0 || now.x == R - 1 || now.y == 0 || now.y == C - 1)) {
             cout << now.dist << '\n';
             return;
         }
@@ -36,15 +38,13 @@ void run() {
             int ny = now.y + dy[i];
 
             if (nx < 0 || nx >= R || ny < 0 || ny >= C) continue;;
-            if (arr[nx][ny] == WALL) continue;
-
+            if (arr[nx][ny] == WALL || arr[nx][ny] == FIRE) continue;
 
             if (status == ROAD) {
                 if (visit[nx][ny]) continue;
                 q.push_back({nx, ny, ROAD, now.dist + 1});
             }
             else if (status == FIRE) {
-                if (arr[nx][ny] == FIRE) continue;
                 arr[nx][ny] = FIRE;
                 q.push_back({nx, ny, FIRE});
             }
