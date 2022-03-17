@@ -6,101 +6,142 @@
 #define MAX 101
 using namespace std;
 
-int arr[MAX][MAX];
-int tmp[MAX][MAX];
 int r, c, k;
+int row, col;   // 고정변수
+int A[MAX][MAX];
 struct Node {
     int num, cnt;
 };
 
-map<int, int> m;
-vector<Node> v;
+map<int, int> rowData[MAX];
+map<int, int> colData[MAX];
 
-bool cmp(Node& A, Node& B) {
-    if (A.cnt < B.cnt) return true;
-    else if (A.cnt == B.cnt) return A.num < B.num;
+bool cmp(Node& a, Node&b) {
+    if (a.cnt < b.cnt) return true;
+    else if (a.cnt == b.cnt) {
+        if (a.num < b.num) return true;
+    }
     return false;
 }
 
-void convertArr(int& row, int& col) {
-    memset(tmp, 0, sizeof(tmp));
+void run() {
+    vector<Node> rvec[MAX];
+    vector<Node> cvec[MAX];
+    
+    int nrow = 0, ncol = 0;
 
-    swap(row, col);
-
-    for (int i = 1; i <= row; i++) {
-        for (int j = 1; j <= col; j++) {
-            tmp[i][j] = arr[j][i];
+    for (int i = 0; i < row; i++) {
+        int size = rowData[i].size() * 2;
+        ncol = max(ncol, size);
+        for (auto rd = rowData[i].begin(); rd != rowData[i].end(); rd++) {
+            rvec[i].push_back({rd->first, rd->second});
         }
     }
 
-    memcpy(arr, tmp, sizeof(arr));
+    for (int i = 0; i < col; i++) {
+        int size = colData[i].size() * 2;
+        nrow = max(nrow, size);
+        for (auto cd = colData[i].begin(); cd != colData[i].end(); cd++) {
+            cvec[i].push_back({cd->first, cd->second});
+        }
+    }
+
+    for (int i = 0; i < row; i++) {
+        sort(rvec[i].begin(), rvec[i].end(), cmp);
+    }
+
+    for (int i = 0; i < col; i++) {
+        sort(cvec[i].begin(), cvec[i].end(), cmp);
+    }
+
+    memset(A, 0, sizeof(A));
+
+    if (row >= col) {
+        for (int i = 0; i < row; i++) {
+            int idx = 0;
+            for (int j = 0; j < rvec[i].size(); j++) {
+                A[i][idx] = rvec[i][j].num;
+                A[i][idx + 1] = rvec[i][j].cnt;
+                idx += 2;
+            }
+        }
+
+        for (int i = 0; i < row; i++) {
+            rowData[i].clear();
+        }
+
+        for (int i = 0; i < col; i++) {
+            colData[i].clear();
+        }
+
+        col = ncol;
+    }
+    else {
+        for (int j = 0; j < col; j++) {
+            int idx = 0;
+            for (int i = 0; i < cvec[j].size(); i++) {
+                A[idx][j] = cvec[j][i].num;
+                A[idx + 1][j] = cvec[j][i].cnt;
+                idx += 2;
+            }
+        }
+
+        for (int i = 0; i < row; i++) {
+            rowData[i].clear();
+        }
+
+        for (int i = 0; i < col; i++) {
+            colData[i].clear();
+        }
+
+        row = nrow;
+    }
 }
 
-void run(int& row, int& col) {
-    bool convert = false;
-
-    if (row < col) {
-        convertArr(row, col);
-        convert = true;
+void mapinit() {
+    for (int i = 0; i < row; i++) {
+        for (int j = 0; j < col; j++) {
+            if (A[i][j] != 0 && i < MAX && j < MAX) {
+                rowData[i][A[i][j]]++;
+                colData[j][A[i][j]]++;
+            }
+        }
     }
+}
 
-    int len = -21e8;
-    
-    for (int i = 1; i <= row; i++) {
-        m.clear();
-        v.clear();
+void init() {
+    cin >> r >> c >> k;
 
-        for (int j = 1; j <= col; j++) {
-            if (arr[i][j] == 0) continue;
-            m[arr[i][j]]++;
-            arr[i][j] = 0;
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            cin >> A[i][j];
         }
-
-        for (auto iter = m.begin(); iter != m.end(); iter++) {
-            v.push_back({iter->first, iter->second});
-        }
-
-        sort(v.begin(), v.end(), cmp);
-        
-        int idx = 1;
-        for (int k = 0; k < v.size(); k++) {
-            arr[i][idx++] = v[k].num;
-            arr[i][idx++] = v[k].cnt;
-        }
-
-        len = max(len, idx);
     }
-
-    col = len;
-
-    if (convert) convertArr(row, col);
     
+    row = 3;
+    col = 3;
 }
 
 int main() {
     ios_base::sync_with_stdio(false);
     cin.tie(0);
 
-    cin >> r >> c >> k;
+    init();
     
-    int row = 3, col = 3, sec = 0;
+    int answer = 0;
 
-    for (int i = 1; i <= row; i++) {
-        for (int j = 1; j <= col; j++) {
-            cin >> arr[i][j];
+    while (A[r - 1][c - 1] != k) {
+        if (answer == MAX) {
+            answer = -1;
+            break;
         }
-    }
-    
-    while (sec <= 100) {
-        if (arr[r][c] == k) break;
-        
-        run(row, col);
-        sec++;
+
+        mapinit();
+        run();
+        answer++;
     }
 
-    if (sec > 100) sec = -1;
-
-    cout << sec;
+    cout << answer << '\n';
 
     return 0;
 }
