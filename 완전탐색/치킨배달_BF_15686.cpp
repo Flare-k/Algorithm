@@ -1,81 +1,74 @@
 #include <iostream>
+#include <algorithm>
 #include <vector>
-#include <utility>
-
+#include <cmath>
+#define MAX 51
 using namespace std;
 
-int N, M;   // N: 도시의 크기, M: 선택될 치킨집 수
-int ans;    // 전체 결과를 갱신하는 변수
-int city[50][50];   // 도시의 집, 치킨집을 담는 변수
-bool visit[13];     // 방문한 치킨집인지 확인
-vector<pair<int, int>> house, chicken, tmp;
+int N, M;
+int arr[MAX][MAX];
+bool used[MAX];
+int answer = 21e8;
+struct Dir {
+    int x, y;
+};
 
+vector<Dir> chicken;
+vector<Dir> home;
 
-// 각 치킨집마다 집과의 최소거릴 계산한다.
-int distance() {
+void distOfChicken() {
     int sum = 0;
 
-    // 집의 개수만큼 loop를 돌고
-    for (int i = 0; i < house.size(); i++) {
-        int x = house[i].first;
-        int y = house[i].second;
-        int d = 999999999;
+    for (Dir h : home) {
+        // 각 집에서 선정된 M개의 치킨집 간에 가장 가까운 거리
+        int dist = 21e8;
 
-        // M개의 치킨집과 집 사이의 최소 거리를 구한다
-        for (int j = 0; j < tmp.size(); j++) {
-            int nx = tmp[j].first;
-            int ny = tmp[j].second;
-            int dist = abs(nx - x) + abs(ny - y);
-
-            d = min(d, dist);
+        for (int i = 0; i < chicken.size(); i++) {
+            if (used[i]) {
+                int d = abs(h.x - chicken[i].x) + abs(h.y - chicken[i].y);
+                dist = min(d, dist);
+            }
         }
 
-        sum += d;
+        sum += dist;
     }
-    return sum;
+
+    answer = min(answer, sum);
 }
 
-void selectChicken(int idx, int cnt) {
-    if (cnt == M) {     // 만약 cnt와 M이 같다면 최소값 ans에 갱신
-        ans = min(ans, distance());
+void run(int level, int start) {
+    if (level == M) {
+        distOfChicken();
         return;
     }
 
-    for (int i = idx; i < chicken.size(); i++) {
-        if (visit[i]) continue;
+    for (int i = start; i < chicken.size(); i++) {
+        if (used[i]) continue;
 
-        visit[i] = true;
-        tmp.push_back(chicken[i]);
-        selectChicken(i, cnt + 1);  // Back Tracking
-        visit[i] = false;
-        tmp.pop_back();
+        used[i] = true;
+        run(level + 1, i + 1);
+        used[i] = false;
     }
 }
 
 int main() {
     ios_base::sync_with_stdio(false);
-    cin.tie(NULL);
-    cout.tie(NULL);
+    cin.tie(0);
 
     cin >> N >> M;
 
-    ans = 999999999;
-
     for (int i = 0; i < N; i++) {
         for (int j = 0; j < N; j++) {
-            cin >> city[i][j];
-            if (city[i][j] == 1) {
-                house.push_back({i, j});
-            }
-            if (city[i][j] == 2) {
-                chicken.push_back({i, j});
-            }
+            cin >> arr[i][j];
+
+            if (arr[i][j] == 1) home.push_back({i, j});
+            else if (arr[i][j] == 2) chicken.push_back({i, j});
         }
     }
- 
-    selectChicken(0, 0);
 
-    cout << ans;
+    run(0, 0);
+
+    cout << answer << '\n';
 
     return 0;
 }
