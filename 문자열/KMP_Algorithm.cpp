@@ -13,11 +13,13 @@ using namespace std;
 // a b a c a a b a
 // 0 0 1 0 1 1 2 3
 vector<int> makeTable(string pattern) {
-    int patternSize = pattern.size();
+    int patternSize = pattern.size();   // 찾고자 하는 문자열의 길이
     vector<int> table(patternSize, 0);
 
     int j = 0;
     for (int i = 1; i < patternSize; i++) {
+        // j가 0 이상인데, i번째와 j번째가 일치하지 않는다면
+        // j 위치에서 1을 뺀 그 인덱스의 데이블 값으로 j 값을 변경
         while (j > 0 && pattern[i] != pattern[j]) {
             j = table[j - 1];
         }
@@ -34,7 +36,7 @@ void KMP(string parent, string pattern) {
     vector<int> table = makeTable(pattern);
 
     int parentSize = parent.size();
-    int patternSize = pattern.size();
+    int patternSize = pattern.size();   
 
     int j = 0;
     
