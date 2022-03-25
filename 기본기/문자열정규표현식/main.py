@@ -76,3 +76,15 @@ result = re.search('(hello)(world)', 'helloworld')
 resultGroup = result.groups()
 print("groups() result: {}".format(resultGroup))
 
+
+# 표현식1(?=표현식2): 표현식1 뒤의 문자열이 표현식2와 매치되면 표현식1 매치.
+# 표현식1(?!표현식2): 표현식1 뒤의 문자열이 표현식2와 매치되지 않으면 표현식1 매치.
+# (?<=표현식1)표현식2: 표현식2 앞의 문자열이 표현식1과 매치되면 표현식2 매치.
+# (?<!표현식1)표현식2: 표현식2 앞의 문자열이 표현식1과 매치되지 않으면 표현식2 매치.
+
+# 문자열 바꾸기
+# sub 메서드를 사용하면 정규식과 매치되는 부분을 다른 문자로 쉽게 바꿀 수 있다.
+
+p = re.compile('(blue|white|red)')
+answer = p.sub('colour', 'blue socks and red shoes') #'colour socks and colour shoes'
+print(answer)
