@@ -1,4 +1,3 @@
-// 4991 로봇청소기
 #include <iostream>
 #include <algorithm>
 #include <vector>
@@ -8,35 +7,32 @@
 #define MAX 21
 using namespace std;
 
-int rx, ry;
-int MST[MAX][MAX];
+const int dx[4] = {-1, 1, 0, 0};
+const int dy[4] = {0, 0, -1, 1};
 int board[MAX][MAX];
+int acc[MAX][MAX];
 bool visit[MAX][MAX];
 bool used[MAX];
 int mst[MAX][MAX];
-int answer;
-int N, M;
-bool flag;
+int N, M, answer;
 enum { ROAD, WALL, DUST };
 struct Node {
     int x, y, dist;
 };
-const int dx[4] = {-1, 1, 0, 0};
-const int dy[4] = {0, 0, -1, 1};
-vector<Node> dust;
-vector<vector<int>> list;
+vector<Node> vec;
 
-int bfs(int sx, int sy, int ex, int ey) {
+void bfs(int x, int y) {
     memset(visit, false, sizeof(visit));
+    memset(acc, -1, sizeof(acc));
+
     queue<Node> q;
-    q.push({sx, sy, 0});
-    visit[sx][sy] = true;
+    q.push({x, y, 0});
+    visit[x][y] = true;
+    acc[x][y] = 0;
 
     while (!q.empty()) {
         Node now = q.front();
         q.pop();
-
-        if (now.x == ex && now.y == ey) return now.dist;
 
         for (int i = 0; i < 4; i++) {
             int nx = now.x + dx[i];
@@ -47,52 +43,34 @@ int bfs(int sx, int sy, int ex, int ey) {
 
             visit[nx][ny] = true;
             q.push({nx, ny, now.dist + 1});
+            acc[nx][ny] = acc[now.x][now.y] + 1;
         }
     }
-
-    return -1;
 }
-vector<int> result;
-void combination() {
-    int len = dust.size();
-    vector<int> v(len);
 
-    for (int i = 0; i < len; i++) {
-        v[i] = i;
+void run(int level, int i, int sum) {
+    if (level == vec.size() - 1) {
+        answer = min(answer, sum);
+        return;
     }
 
-    int minus_cnt = 0, cnt = 0;
-
-    do {
-        int num, sum = 0;
-        bool check = false;
-
-        for (int i = 0; i < len; i++) {
-            if (i == 0) num = bfs(rx, ry, dust[v[i]].x, dust[v[i]].y);
-            else num = bfs(dust[v[i - 1]].x, dust[v[i - 1]].y, dust[v[i]].x, dust[v[i]].y);
-
-            if (num == -1) {
-                minus_cnt++;
-                check = true;
-                break;
-            }
-            else sum += num;
-        }
-
-        cnt++;
-
-        if (!check) answer = min(answer, sum);
-
-    } while (next_permutation(v.begin(), v.end()));
-
-    if (minus_cnt == cnt) flag = true;
+    for (int j = 1; j < vec.size(); j++) {
+        if (used[j]) continue;
+        used[j] = true;
+        run(level + 1, j, sum + mst[i][j]);
+        used[j] = false;
+    }
 }
 
 void init () {
-    dust.clear();
-    string path;
+    memset(board, 0, sizeof(board));
+    memset(mst, 0, sizeof(mst));
+    fill(used, used + MAX, false);
+    answer = 21e8;
+    vec.clear();
 
     for (int i = 0; i < N; i++) {
+        string path;
         cin >> path;
 
         for (int j = 0; j < M; j++) {
@@ -100,15 +78,34 @@ void init () {
             else if (path[j] == 'x') board[i][j] = WALL;
             else if (path[j] == '*') {
                 board[i][j] = DUST;
-                dust.push_back({i, j});
+                vec.push_back({i, j});
             }
             else if (path[j] == 'o') {
                 board[i][j] = ROAD;
-                rx = i;
-                ry = j;
+                vec.insert(vec.begin(), {i, j});
             }
         }
     }
+
+    for (int i = 0; i < vec.size(); i++) {
+        int sx = vec[i].x;
+        int sy = vec[i].y;
+
+        bfs(sx, sy);    // i에서 각 쓰레기와의 거리
+
+        for (int j = 0; j < vec.size(); j++) {
+            int ex = vec[j].x;
+            int ey = vec[j].y;
+
+            mst[i][j] = acc[ex][ey];    // i와 j의 거리
+
+            if (mst[i][j] == -1) {
+                answer = -1;
+                return;
+            }
+        }        
+    }
+
 }
 
 int main() {
@@ -118,61 +115,10 @@ int main() {
 
     while (cin >> M >> N){
         if (N == 0 && M == 0) break;
-        
-        memset(board, 0, sizeof(board));
-        memset(visit, 0, sizeof(visit));
-        answer = 21e8;
-        flag = false;
-
         init();
-        combination();
-
-        if (flag) answer = -1;
-        
-        result.push_back(answer);
-    }
-
-
-    for (int num : result) {
-        cout << num << '\n';
+        run(0, 0, 0);
+        cout << answer << '\n';
     }
 
 	return 0;
 }
-
-/*
-7 5
-.......
-.o...*.
-.......
-.*...*.
-.......
-15 13
-.......x.......
-...o...x....*..
-.......x.......
-.......x.......
-.......x.......
-...............
-xxxxx.....xxxxx
-...............
-.......x.......
-.......x.......
-.......x.......
-..*....x....*..
-.......x.......
-10 10
-..........
-..o.......
-..........
-..........
-..........
-.....xxxxx
-.....x....
-.....x.*..
-.....x....
-.....x....
-0 0
-
-> 8 49 -1
-*/
