@@ -1,126 +1,92 @@
 #include <iostream>
-#include <vector>
-#include <cstring>
-#include <cmath>
 #include <algorithm>
+#define MAX 500
 using namespace std;
 
-// 서 남 동 북
-const int MAX = 500;
-const int dx[] = {0, 1, 0, -1};
-const int dy[] = {-1, 0, 1, 0};
-
-int N, dir;
-int num = 1, answer;
-int arr[MAX][MAX];    // [MAX]
-double sandRate[5][5] = {
-    {0, 0, 0.02, 0, 0},
-    {0, 0.1, 0.07, 0.01, 0},
-    {0.05, 0.45, 0, 0, 0},
-    {0, 0.1, 0.07, 0.01, 0},
-    {0, 0, 0.02, 0, 0}
+int percent[9] = {1, 1, 2, 7, 7, 2, 10, 10, 5};
+const int dx[4] = {0, 1, 0, -1};
+const int dy[4] = {-1, 0, 1, 0};
+const int bx[4][10] = {
+    {-1, 1, -2, -1, 1, 2, -1, 1, 0, 0},
+    {-1, -1, 0, 0, 0, 0, 1, 1, 2, 1},
+    {-1, 1, -2, -1, 1, 2, -1, 1, 0, 0},
+    {1, 1, 0, 0, 0, 0, -1, -1, -2, -1}
+};
+const int by[4][10] = {
+    {1, 1, 0, 0, 0, 0, -1, -1, -2, -1},
+    {-1, 1, -2, -1, 1, 2, -1, 1, 0, 0},
+    {-1, -1, 0, 0, 0, 0, 1, 1, 2, 1},
+    {-1, 1, -2, -1, 1, 2, -1, 1, 0, 0}
 };
 
-void rotateSandRate() {
-    double temp[5][5];
+int N;
+int board[MAX][MAX];
+int answer; // 격자밖으로 나간 모래
 
-    memcpy(temp, sandRate, sizeof(sandRate));
+void spreadSand(int x, int y, int dir) {
+    int ret = 0;
+    int originSand = board[x][y];
 
-    for (int i = 0; i < 5; i++) {
-        for (int j = 0; j < 5; j++) {
-            sandRate[5 - (j + 1)][i] = temp[i][j];
+    for (int i = 0; i < 10; i++) {
+        int sand;
+        if (i != 9) {
+            // 날라갈 모래의 양
+            sand = originSand * percent[i] / 100;
+            // 비율만큼 소멸
+            board[x][y] -= sand;
         }
+        else {
+            // a에 들어갈 모래 = 비율만큼 다 날라가고 남은 값
+            sand = board[x][y];
+        }
+
+        int nx = x + bx[dir % 4][i];
+        int ny = y + by[dir % 4][i];
+        
+        if (nx < 0 || nx >= N || ny < 0 || ny >= N) {
+            ret += sand;
+            continue;
+        }
+        
+        board[nx][ny] += sand;
     }
+
+    // 모래 소멸
+    board[x][y] = 0;
+    answer += ret;
 }
 
-int alphaValue(int original) {
-    int sandSum = floor(original * 0.01) * 2 
-                + floor(original * 0.02) * 2 
-                + floor(original * 0.07) * 2 
-                + floor(original * 0.1) * 2 
-                + floor(original * 0.05);
-    return original - sandSum;
-}
+void run() {
+    int x = N / 2;
+    int y = N / 2;
+    int dir = 0;
 
-void moveSand(int x, int y) {
-    int originalSand = arr[x][y];
-    arr[x][y] = 0;
-
-    if (originalSand == 0) return;
-
-    // 상하좌우 이동을 고려하여 -2~2로 설정 (중요)
-    for (int i = -2; i <= 2; i++) {
-        for (int j = -2; j <= 2; j++) {
-            double percent = sandRate[i + 2][j + 2];
-
-            if (percent == 0) continue;
-
-            int moveSand;
-
-            if (percent < 0.40) {
-                moveSand = floor(originalSand * percent);
-            }
-            else {
-                moveSand = alphaValue(originalSand);
-            }
-
-            int nx = x + i;
-            int ny = y + j;
-
-            if (nx < 0 || ny < 0 || nx >= N || ny >= N) {
-                answer += moveSand;
-                continue;
-            }
-
-            arr[nx][ny] += moveSand;
+    for (double i = 1.0; i <= N; i += 0.5) {
+        for (int j = 0; j < (int)i; j++) {
+            x += dx[dir % 4];
+            y += dy[dir % 4];
+            spreadSand(x, y, dir);
         }
-    }
-}
-
-// 토네이도
-void run(int x, int y) {
-    int len = 1;
-
-    while (1) {
-        if (x == 0 && y == 0 ) break;
-
-        for (int k = 0; k < 2; k++) {
-            for (int i = 0; i < len; i++) {
-                int nx = x + dx[dir % 4];
-                int ny = y + dy[dir % 4];
-
-                moveSand(nx, ny);
-                
-                x = nx;
-                y = ny;
-                
-                if (x == 0 && y == 0 ) {
-                    cout << answer;
-                    return;
-                }
-            }
-
-            dir++;
-            rotateSandRate();
-        }
-
-        len++;
+        dir++;
     }
 }
 
 int main() {
     ios_base::sync_with_stdio(false);
     cin.tie(0);
-
+    cout.tie(0);
+    
     cin >> N;
 
     for (int i = 0; i < N; i++) {
         for (int j = 0; j < N; j++) {
-            cin >> arr[i][j];
+            cin >> board[i][j];
         }
     }
 
-    run(N / 2, N / 2);
+    run();
 
-    return 0;
+    cout << answer << '\n';
+
+	return 0;
 }
