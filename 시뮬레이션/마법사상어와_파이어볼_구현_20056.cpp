@@ -1,127 +1,109 @@
 #include <iostream>
+#include <algorithm>
 #include <vector>
 #include <cstring>
+#include <cmath>
+#define MAX 51
 using namespace std;
 
 const int dx[8] = {-1, -1, 0, 1, 1, 1, 0, -1};
 const int dy[8] = {0, 1, 1, 1, 0, -1, -1, -1};
-
-struct Ball {
-    int r;  // 행
-    int c;  // 열
-    int m;  // 질량
-    int s;  // 속력
-    int d;  // 방향
+const int direction[4] = {0, 2, 4, 6};
+int N, M, K;
+int answer;
+struct Node {
+    int x, y, m, s, d;
+    int cnt;    // board에서 파이어볼 개수 카운팅
+    int odd; // 홀수만 카운팅
+    int even;
 };
+struct Dir {
+    int x, y;
+};
+Node board[MAX][MAX];
+vector<Node> fireball;
 
-vector<Ball> arr[55][55];
-vector<Ball> balls;
+void run() {
+    memset(board, {}, sizeof(board));
 
-int checkEvenOdd(int x, int y);
+    for (int i = 0; i < fireball.size(); i++) {
+        Node now = fireball[i];
 
-int main() {
-    ios_base::sync_with_stdio(false);
-    cin.tie(NULL);
-    cout.tie(NULL);
+        int nx = now.x + dx[now.d] * (now.s % N);
+        int ny = now.y + dy[now.d] * (now.s % N);
 
-    int N, M, K;
-    cin >> N >> M >> K; // N 행렬의 크기, M 입력 개수, K 반복횟수
+        while (nx < 1) nx += N;
+        while (nx > N) nx -= N;
+        while (ny < 1) ny += N;
+        while (ny > N) ny -= N;
 
-    int r, c, m, s, d;
-    for (int i = 0; i < M; i++) {
-        cin >> r >> c >> m >> s >> d;
-        balls.push_back({r, c, m, s, d});
+        board[nx][ny].x = nx;
+        board[nx][ny].y = ny;
+        board[nx][ny].d = now.d;
+        board[nx][ny].m += now.m;
+        board[nx][ny].s += now.s;
+        board[nx][ny].cnt++;
+
+        if (now.d % 2) board[nx][ny].odd++;
+        else board[nx][ny].even++;
     }
 
-    while (K--) {
-        for (int i = 1; i <= N; i++) {
-            for (int j = 1; j <= N; j++) {
-                arr[i][j].clear();
-            }
-        }
+    fireball.clear();
 
-        for (int i = 0; i < balls.size(); i++) {
-            // 1단계
-            int nr = balls[i].r + dx[balls[i].d] * (balls[i].s % N);
-            int nc = balls[i].c + dy[balls[i].d] * (balls[i].s % N);
-
-            while (nr > N) nr -= N;
-            while (nc > N) nc -= N;
-            while (nr < 1) nr += N;
-            while (nc < 1) nc += N;
-
-            // 같은 칸에 있는 경우 하나로 모으기
-            balls[i].r = nr;
-            balls[i].c = nc;
-
-            arr[nr][nc].push_back(balls[i]);
+    for (int i = 1; i <= N; i++) {
+        for (int j = 1; j <= N; j++) {
+            if (board[i][j].cnt == 0 || board[i][j].m == 0) continue;
             
-        }
-
-        vector<Ball> tmp;
-
-        for (int i = 1; i <= N; i++) {
-            for (int j = 1; j <= N; j++) {
-                if (arr[i][j].size() == 0) continue;
-                if (arr[i][j].size() == 1) {
-                    tmp.push_back(arr[i][j][0]);
-                    continue;
-                }
-
-                int mSum = 0, sSum = 0;
-
-                for (int k = 0; k < arr[i][j].size(); k++) {
-                    mSum += arr[i][j][k].m;
-                    sSum += arr[i][j][k].s;
-                }
-
-                int m = mSum / 5;
+            Node now = board[i][j];
+            
+            if (now.cnt == 1) {
+                fireball.push_back({i, j, now.m, now.s, now.d, 0, 0, 0});
+            }
+            else if (now.cnt > 1) {
+                int m = now.m / 5;
+                int s = now.s / now.cnt;
+                
                 if (m == 0) continue;
-
-                int s = sSum / arr[i][j].size();
-                int d = checkEvenOdd(i, j);
-
-                for (int k = 0; k < 4; k++) {  
-                    tmp.push_back({i, j, m, s, d});
-                    d += 2;
+                
+                for (int k = 0; k < 4; k++) {
+                    if (now.cnt == now.odd || now.cnt == now.even) {
+                        fireball.push_back({i, j, m, s, direction[k], 0, 0, 0});
+                    }
+                    else {
+                        fireball.push_back({i, j, m, s, direction[k] + 1, 0, 0, 0});
+                    }
                 }
             }
         }
-
-        balls = tmp;
     }
 
-
-    int sum = 0;
-    for (int i = 0; i < balls.size(); i++) {
-        sum += balls[i].m;
-    }
-
-    cout << sum;
-
-    return 0;
 }
 
 
-int checkEvenOdd(int x, int y) {
-   int even = 0;
-   int odd = 0;
+int main() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(0);
+    cout.tie(0);
 
-   for (int i = 0; i < balls.size(); i++) {
-      if (balls[i].r == x && balls[i].c == y) {
-         if (balls[i].d % 2 == 0)
-            even++;
-         else
-            odd++;
-      }
-   }
+    cin >> N >> M >> K;
+    
+    for (int i = 0; i < M; i++) {
+        int r, c, m, s, d;
+        cin >> r >> c >> m >> s >> d;
+        fireball.push_back({r, c, m, s, d});
+    }
 
-   if (even != 0 && odd == 0)
-      return 0;
-   else if (even == 0 && odd != 0)
-      return 0;
-   else if (even != 0 && odd != 0)
-      return 1;
+    for (int i = 0; i < K; i++) {
+        run();
+    }
+    
+    int answer = 0;
 
-   return 0;
+    for (int i = 0; i < fireball.size(); i++) {
+        answer += fireball[i].m;
+    }
+
+    cout << answer << '\n';
+
+	return 0;
 }
