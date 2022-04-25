@@ -1,130 +1,115 @@
 #include <iostream>
 #include <algorithm>
 #include <cstring>
+#include <string>
 #include <vector>
-#include <unordered_map>
+#define MAX 4
 using namespace std;
 
-// 8->1로 갈수록 반시계 MAX5도
-const int MAX = 4;
-const int dx[] = {0, -1, -1, 0, 1, 1, 1, 0, -1};
-const int dy[] = {0, 0, -1, -1, -1, 0, 1, 1, 1};
-
-// 이동할 수 없는 칸은 상어가 있거나, 공간의 경계를 넘는 칸
-struct Fish {
+struct Node {
     int num, dir;
 };
-
-struct Node {
-    int x, y;
+struct Dir {
+    int x, y, dir;
 };
+const int dx[] = {0, -1, -1, 0, 1, 1, 1, 0, -1};
+const int dy[] = {0, 0, -1, -1, -1, 0, 1, 1, 1};
+bool survive[MAX * MAX + 1];
+int answer;
 
-struct Shark {
-    int x, y, num, dir;
-};
+void fishMove(vector<vector<Node> >& board, vector<Dir>& fish, int sx, int sy, int sd, int eat) {
+    answer = max(answer, eat);
 
-int n, d, result;;
+    // 물고기 이동
+    for (int num = 1; num <= MAX * MAX; num++) {
+        if (!survive[num]) continue;
 
-void vectReset(vector<vector<Fish>>& map, unordered_map<int, Node>& fish) {
-    for (int i = 0; i < MAX; i++) {
-        for (int j = 0; j < MAX; j++) {
-            if (map[i][j].num != 0) fish[map[i][j].num] = {i, j};
-        }
-    }
-}
+        int x = fish[num].x;
+        int y = fish[num].y;
+        
+        Node now = board[x][y];
 
-void fishMove(vector<vector<Fish>>& map, unordered_map<int, Node>& fish, Shark& shark, int total) {
+        int d = now.dir;
 
-    result = max(result, total);
+        for (int i = 0; i < 8; i++) {
+            if (d == 9) d = 1;
 
-    for (int i = 1; i <= MAX * MAX; i++) {
-        if (fish.count(i) == true && shark.num != i) {
-            
-            Node now = fish[i];
-            int dir = map[now.x][now.y].dir;
-            int flag = 0;
+            int nx = x + dx[d % 9];
+            int ny = y + dy[d % 9];
 
-            while (1) {
-                if (dir == 9) dir = 1;
+            d++;
 
-                int nx = now.x + dx[dir % 9];
-                int ny = now.y + dy[dir % 9];
-                
-                flag++;
-                dir++;
+            if (nx < 1 || nx > MAX || ny < 1 || ny > MAX) continue;
+            if (nx == sx && ny == sy) continue;
 
-                if (flag > 8) break;
+            int otherNUm = board[nx][ny].num;            
+            board[x][y].dir = d - 1;
+            fish[num].dir = d - 1;
 
-                if (nx < 0 || ny < 0 || nx >= MAX || ny >= MAX) continue;
-                if (nx == shark.x && ny == shark.y) continue;
-
-                map[now.x][now.y].dir = dir - 1;
-                
-                swap(map[now.x][now.y], map[nx][ny]);
-                swap(fish[map[now.x][now.y].num], fish[map[nx][ny].num]);
-
-                break;
-            }
+            swap(board[x][y], board[nx][ny]);
+            swap(fish[num].x, fish[otherNUm].x);
+            swap(fish[num].y, fish[otherNUm].y);
+            break;
         }
     }
 
-    fish.clear();
-    vectReset(map, fish);
+    // 상어 이동
+    for (int n = 1; n <= 3; n++) {
+        vector<vector<Node> > tmp(MAX + 1, vector<Node>(MAX + 1));
+        vector<Dir> cfish(MAX * MAX + 1);
+        tmp = board;
+        cfish = fish;
 
-    // shark
-    int x = shark.x;
-    int y = shark.y;
-    int dir = shark.dir;
-
-    for (int i = 1; i <= 3; i++) {
-        vector<vector<Fish>> tmp = map;
-        unordered_map<int, Node> tmpFish = fish;
+        int nx = sx + (dx[sd] * n);
+        int ny = sy + (dy[sd] * n);
+        if (nx < 1 || nx > MAX || ny < 1 || ny > MAX) continue;
+        if (!survive[tmp[nx][ny].num]) continue;
         
-        int nx = x + (dx[dir] * i);
-        int ny = y + (dy[dir] * i);
+        int num = tmp[nx][ny].num;
+        int nd = tmp[nx][ny].dir;
 
-        if (nx < 0 || ny < 0 || nx >= MAX || ny >= MAX) continue;
-        if (tmp[nx][ny].num == 0) continue;
-
-        int eatFish = tmp[nx][ny].num;
-        
-        shark = {nx, ny, tmp[nx][ny].num, tmp[nx][ny].dir};
-        tmp[nx][ny] = {0, 0};
-
-        fishMove(tmp, tmpFish, shark, total + eatFish);
+        survive[num] = false;
+        fishMove(tmp, cfish, nx, ny, nd, eat + num);
+        survive[num] = true;
     }
 }
-
-void init(vector<vector<Fish>>& map, unordered_map<int, Node>& fish, Shark& shark) {
-    for (int i = 0; i < MAX; i++) {
-        for (int j = 0; j < MAX; j++) {
-            cin >> n >> d;
-        
-            if (i == 0 && j == 0) {
-                shark = {i, j, n, d};
-                map[i][j] = {0, 0};
-                continue;
-            }
-
-            map[i][j] = {n, d};
-            fish[n] = {i, j};
-        }
-    }
-}
+// ↑, ↖, ←, ↙, ↓, ↘, →, ↗
+// 1, 2, 3, 4, 5, 6, 7, 8
 
 int main() {
     ios_base::sync_with_stdio(false);
     cin.tie(0);
     cout.tie(0);
 
-    unordered_map<int, Node> fish;
-    vector<vector<Fish>> map(MAX, vector<Fish>(MAX));
-    Shark shark;
-    
-    init(map, fish, shark);
-    fishMove(map, fish, shark, shark.num);
+    vector<vector<Node> > board(MAX + 1, vector<Node>(MAX + 1));
+    vector<Dir> fish(MAX * MAX + 1);
+    Dir shark;
+    int eat = 0;
+    for (int i = 1; i <= MAX; i++) {
+        for (int j = 1; j <= MAX; j++) {
+            int n, d;
+            cin >> n >> d;
 
-    cout << result;
+            if (i == 1 && j == 1) {
+                shark.x = i;
+                shark.y = j;
+                shark.dir = d;
+                eat = n;
+                survive[n] = false;
+                board[i][j] = {n, d};   // 상어가 먹었다 해도 물고기끼리 이동하기 위해 값 할당 필요 (!survive[tmp[nx][ny].num] 판단위해)
+                fish[n] = {i, j, d};
+                continue;
+            }
 
-    return 0;
+            board[i][j] = {n, d};
+            fish[n] = {i, j, d};
+            survive[n] = true;
+        }
+    }
+
+    fishMove(board, fish, shark.x, shark.y, shark.dir, eat);
+
+    cout << answer << '\n';
+
+	return 0;
 }
