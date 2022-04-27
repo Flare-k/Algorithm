@@ -1,147 +1,128 @@
 #include <iostream>
-#include <algorithm>
 #include <cstring>
+#include <algorithm>
 #include <vector>
 #include <map>
 #define MAX 101
 using namespace std;
 
-int r, c, k;
-int row, col;   // 고정변수
-int A[MAX][MAX];
 struct Node {
     int num, cnt;
 };
+int board[MAX][MAX];
+int N, M, r, c, k;
+int row, col;
+int answer;
+map<int, int> m;
+vector<Node> arr;
 
-map<int, int> rowData[MAX];
-map<int, int> colData[MAX];
-
-bool cmp(Node& a, Node&b) {
-    if (a.cnt < b.cnt) return true;
-    else if (a.cnt == b.cnt) {
-        if (a.num < b.num) return true;
+bool cmp(Node& A, Node& B) {
+    if (A.cnt < B.cnt) return true;
+    else if (A.cnt == B.cnt) {
+        if (A.num < B.num) return true;
     }
     return false;
 }
 
 void run() {
-    vector<Node> rvec[MAX];
-    vector<Node> cvec[MAX];
-    
-    int nrow = 0, ncol = 0;
-
-    for (int i = 0; i < row; i++) {
-        int size = rowData[i].size() * 2;
-        ncol = max(ncol, size);
-        for (auto rd = rowData[i].begin(); rd != rowData[i].end(); rd++) {
-            rvec[i].push_back({rd->first, rd->second});
-        }
-    }
-
-    for (int i = 0; i < col; i++) {
-        int size = colData[i].size() * 2;
-        nrow = max(nrow, size);
-        for (auto cd = colData[i].begin(); cd != colData[i].end(); cd++) {
-            cvec[i].push_back({cd->first, cd->second});
-        }
-    }
-
-    for (int i = 0; i < row; i++) {
-        sort(rvec[i].begin(), rvec[i].end(), cmp);
-    }
-
-    for (int i = 0; i < col; i++) {
-        sort(cvec[i].begin(), cvec[i].end(), cmp);
-    }
-
-    memset(A, 0, sizeof(A));
+    int newRow = row, newCol = col;
 
     if (row >= col) {
-        for (int i = 0; i < row; i++) {
-            int idx = 0;
-            for (int j = 0; j < rvec[i].size(); j++) {
-                A[i][idx] = rvec[i][j].num;
-                A[i][idx + 1] = rvec[i][j].cnt;
-                idx += 2;
+        for (int i = 1; i <= row; i++) {
+            m.clear();
+            arr.clear();
+            for (int j = 1; j <= col; j++) {
+                if (board[i][j] == 0) continue;
+                m[board[i][j]]++;
+                board[i][j] = 0;
             }
-        }
 
-        for (int i = 0; i < row; i++) {
-            rowData[i].clear();
-        }
+            for (auto iter = m.begin(); iter != m.end(); iter++) {
+                arr.push_back({iter->first, iter->second});
+            }
+            
+            int size = arr.size() * 2;
+            int idx = 0;
+            newCol = max(size, newCol);
+            sort(arr.begin(), arr.end(), cmp);
 
-        for (int i = 0; i < col; i++) {
-            colData[i].clear();
-        }
+            for (int j = 1; j <= size; j += 2) {
+                board[i][j] = arr[idx].num;
+                board[i][j + 1] = arr[idx].cnt;
+                idx++;
+            }
 
-        col = ncol;
+            for (int j = newCol; j >= size + 1; j--) {
+                board[i][j] = 0;
+            }
+
+        }
     }
     else {
-        for (int j = 0; j < col; j++) {
+        for (int j = 1; j <= col; j++) {
+            m.clear();
+            arr.clear();
+            for (int i = 1; i <= row; i++) {
+                if (board[i][j] == 0) continue;
+                m[board[i][j]]++;
+                board[i][j] = 0;
+            }
+
+            for (auto iter = m.begin(); iter != m.end(); iter++) {
+                arr.push_back({iter->first, iter->second});
+            }
+            
+            int size = arr.size() * 2;
             int idx = 0;
-            for (int i = 0; i < cvec[j].size(); i++) {
-                A[idx][j] = cvec[j][i].num;
-                A[idx + 1][j] = cvec[j][i].cnt;
-                idx += 2;
+            newRow = max(size, newRow);
+            sort(arr.begin(), arr.end(), cmp);
+
+            for (int i = 1; i <= size; i += 2) {
+                board[i][j] = arr[idx].num;
+                board[i + 1][j] = arr[idx].cnt;
+                idx++;
             }
-        }
 
-        for (int i = 0; i < row; i++) {
-            rowData[i].clear();
-        }
-
-        for (int i = 0; i < col; i++) {
-            colData[i].clear();
-        }
-
-        row = nrow;
-    }
-}
-
-void mapinit() {
-    for (int i = 0; i < row; i++) {
-        for (int j = 0; j < col; j++) {
-            if (A[i][j] != 0 && i < MAX && j < MAX) {
-                rowData[i][A[i][j]]++;
-                colData[j][A[i][j]]++;
+            for (int i = newRow; i >= size + 1; i--) {
+                board[i][j] = 0;
             }
         }
     }
-}
 
-void init() {
-    cin >> r >> c >> k;
-
-    for (int i = 0; i < 3; i++) {
-        for (int j = 0; j < 3; j++) {
-            cin >> A[i][j];
-        }
-    }
-    
-    row = 3;
-    col = 3;
+    row = newRow;
+    col = newCol;
 }
 
 int main() {
     ios_base::sync_with_stdio(false);
     cin.tie(0);
 
-    init();
-    
-    int answer = 0;
+    cin >> r >> c >> k;
 
-    while (A[r - 1][c - 1] != k) {
-        if (answer == MAX) {
-            answer = -1;
-            break;
+    for (int i = 1; i <= 3; i++) {
+        for (int j = 1; j <= 3; j++) {
+            cin >> board[i][j];
         }
-
-        mapinit();
-        run();
-        answer++;
     }
 
-    cout << answer << '\n';
+    int time = 0;
+    row = 3; 
+    col = 3;
+
+    if (board[r][c] == k) cout << time << '\n';
+    else {
+        while (time <= 100) {
+            run();
+            time++;
+            
+            if (board[r][c] == k) {
+                cout << time << '\n';
+                break;
+            }
+        }
+
+        if (time > 100) cout << -1 << '\n';
+    }
 
     return 0;
 }
