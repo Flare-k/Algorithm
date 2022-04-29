@@ -3,7 +3,7 @@
 #include <iostream>
 #include <vector>
 using namespace std;
-const int MAX = 20 + 1;
+const int MAX = 21;
 int arr[MAX][MAX];
 bool team[MAX];
 int n;
@@ -18,10 +18,8 @@ void go(int idx, int cnt) {
 
     if (n / 2 == cnt) {
         for (int i = 0; i < n; i++) {
-            if (team[i])
-                star.push_back(i);  // 해당 팀원의 인덱스를 담는 과정
-            else
-                link.push_back(i);
+            if (team[i]) star.push_back(i);  // 해당 팀원의 인덱스를 담는 과정
+            else link.push_back(i);
         }
         for (int i = 0; i < (n / 2); i++) {
             for (int j = 0; j < (n / 2); j++) {
@@ -36,13 +34,11 @@ void go(int idx, int cnt) {
     }
 
     for (int i = idx; i < n; i++) {
-        if (team[i])
-            continue;
-        else {
-            team[i] = true;
-            go(i, cnt + 1);
-            team[i] = false;
-        }
+        if (team[i]) continue;
+        
+        team[i] = true;
+        go(i, cnt + 1);
+        team[i] = false;
     }
 }
 
