@@ -1,77 +1,94 @@
 #include <iostream>
 #include <algorithm>
 #include <vector>
+#define MAX 101
 using namespace std;
 
-const int MAX = 101;
-int roads[MAX][MAX];
 int N, L;
-int cnt;
+int answer;
+int board[MAX][MAX];
+bool row[MAX][2];   // 0: 우, 1: 좌 (행을 좌에서 우로, 우에서 좌로 탐색하는 경우)
+bool col[MAX][2];   // 0: 하, 1: 상 (열을 좌에서 우로, 우에서 좌로 탐색하는 경우)
+struct Node {
+    int num, cnt;
+};
+vector<Node> node;
 
-bool validRoad(vector<int>& r) {
-    int num = r.front();
-    bool stop = false;
-
-    for (int i = 1; i < N; i++) {
-        if (num == r[i]) continue;
-        else if (num == r[i] + 1) { // 내리막 경사로
-            num--;
-            for (int j = i; j < i + L; j++) {
-                if (j >= N || num != r[j]) {
-                    stop = true;
-                    break;
-                }
-
-                r[j]++;
+void checkRoad(int r, int c, int dir) {
+    bool flag = true;
+    int iter = node.size() - 1;
+    for (int i = 0; i < iter; i++) {
+        if (abs(node[i].num - node[i + 1].num) > 1) return;
+        else if (node[i].num + 1 == node[i + 1].num) {
+            if (node[i].cnt < L) {
+                flag = false;
+                return;
             }
-
-            if (stop) break;
-            else i += (L - 1);
+            else node[i].cnt -= L;
         }
-        else if (num == r[i] - 1) { // 오르막 경사로
-            num++;
-            for (int j = i - 1; j > i - L - 1; j--) {
-                if (j < 0 || num != r[j] + 1) {
-                    stop = true;
-                    break;
-                }
-
-                r[j]--; // 중복 사용을 막기 위해 아예 차이를 늘린다.
+        else if (node[i].num == node[i + 1].num + 1) {
+            if (node[i + 1].cnt < L) {
+                flag = false;
+                return;
             }
-        }
-        else {
-            stop = true;
-            break;
+            else node[i + 1].cnt -= L;
         }
     }
 
-    return !stop;
+    if (flag) {
+        if (r != 0) {
+            row[r][dir] = true;
+            row[r][1 - dir] = true;
+        }
+        else if (c != 0) {
+            col[c][dir] = true;
+            col[c][1 - dir] = true;
+        }
+        answer++;
+    }
 }
 
-void run() {
-    vector<int> tmp;
-    
-    for (int i = 0; i < N; i++) {
-        // 가로 ----------------------------
-        tmp.clear();
-
-        for (int j = 0; j < N; j++) {
-            tmp.push_back(roads[i][j]);
+void checkRow() {
+    for (int i = 1; i <= N; i++) {
+        int num = board[i][1];
+        int cnt = 1;
+        node.clear();
+        for (int j = 2; j <= N; j++) {
+            if (num == board[i][j]) cnt++;
+            else {
+                node.push_back({num, cnt});
+                num = board[i][j];
+                cnt = 1;
+            }
         }
 
-        if (validRoad(tmp) == true) cnt++;
-
-        // 세로 ----------------------------
-        tmp.clear();
-
-        for (int j = 0; j < N; j++) {
-            tmp.push_back(roads[j][i]);
-        }
-
-        if (validRoad(tmp) == true) cnt++;
+        node.push_back({num, cnt});
+        if (!row[i][0]) checkRoad(i, 0, 0); // 좌 -> 우
+        reverse(node.begin(), node.end());
+        if (!row[i][1]) checkRoad(i, 0, 1); // 우 -> 좌
     }
+}
 
-    cout << cnt;
+void checkCol() {
+    for (int j = 1; j <= N; j++) {
+        int num = board[1][j];
+        int cnt = 1;
+        node.clear();
+
+        for (int i = 2; i <= N; i++) {
+            if (num == board[i][j]) cnt++;
+            else {
+                node.push_back({num, cnt});
+                num = board[i][j];
+                cnt = 1;
+            }
+        }
+
+        node.push_back({num, cnt});
+        if (!col[j][0]) checkRoad(0, j, 0); // 상 -> 하
+        reverse(node.begin(), node.end());
+        if (!col[j][1]) checkRoad(0, j, 1); // 하 -> 상
+    }
 }
 
 int main() {
@@ -80,13 +97,15 @@ int main() {
 
     cin >> N >> L;
 
-    for (int i = 0; i < N; i++) {
-        for (int j = 0; j < N; j++) {
-            cin >> roads[i][j];
+    for (int i = 1; i <= N; i++) {
+        for (int j = 1; j <= N; j++) {
+            cin >> board[i][j];
         }
     }
 
-    run();
+    checkRow();
+    checkCol();
+    cout << answer << '\n';
 
     return 0;
 }
