@@ -10,7 +10,6 @@
     DFS를 이용하여 모든 노드에 대해 깊이를 계산할 수 있다.
     // O(NM)
 */
-
 #include <iostream>
 #include <vector>
 #include <cmath>
@@ -18,19 +17,19 @@
 using namespace std;
 
 int N, M;
+int MAXH;
 int parent[MAX][20];
 int depth[MAX];
 int visit[MAX];
 vector<int> graph[MAX];
-int MAXH;
 
 int lca(int a, int b) {
     if (depth[a] > depth[b]) swap(a, b);
 
     for (int i  = MAXH; i >= 0; i--) {
         if (depth[b] - depth[a] >= (1 << i)) b = parent[b][i];
-
     }
+
     if (a == b) return a;
 
     for (int i  = MAXH; i >= 0; i--) {
@@ -66,9 +65,10 @@ int main() {
     cin.tie(0);
     cout.tie(0);
 
+    int a, b;
     cin >> N;
+
     for (int i = 0; i < N - 1; i++) {
-        int a, b;
         cin >> a >> b;
         graph[a].push_back(b);
         graph[b].push_back(a);
@@ -79,7 +79,6 @@ int main() {
     
     cin >> M;
     for (int i = 0; i < M; i++) {
-        int a, b;
         cin >> a >> b;
         cout << lca(a, b) << '\n';
     }
